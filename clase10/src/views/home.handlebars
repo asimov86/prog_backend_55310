@@ -1,0 +1,37 @@
+<style>
+    .table td,
+    .table th {
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container mt-2">
+    <div class="jumbotron">
+
+
+        <div id="productos">
+        {{#if product.length}}
+        <h2>Menú</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Image</th>
+                </tr>
+                {{#each product}}
+                <tr>
+                    <td>{{this.title}}</td>
+                    <td>${{this.price}}</td>
+                    <td><img width="100" src={{this.thumbnail}} alt="not found"></td>
+                </tr>
+                {{/each}}
+            </table>
+        </div>
+        {{else}}
+        <h3>No hay productos</h3>
+        {{/if}}
+
+        </div>
+    </div>
+</div>
