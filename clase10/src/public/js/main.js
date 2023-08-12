@@ -1,7 +1,5 @@
 const socket = io.connect();
-
 const addProduct = document.getElementById('addProduct');
-
 
 addProduct.addEventListener('submit', e => {
     e.preventDefault()
@@ -22,9 +20,28 @@ addProduct.addEventListener('submit', e => {
 // --------------------------------------------------------------------------------------------
 const tabla = document.getElementById('tabla');
 socket.on('products', productos => {
+    makeHtmlTable(productos);
+});
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+function addDeleteButtonListeners() {
+    const deleteButtons = document.querySelectorAll('.btnDelete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const productData = JSON.parse(this.getAttribute('data-product-data'));
+            deleteProducts(productId, productData);
+        });
+    });
+}
+
+function makeHtmlTable(products) {
+    const tabla = document.getElementById('tabla');
     let conjunto = ''
-    
-    productos.map((e)=> {
+    if (products.length > 0) {
+    products.map((e)=> {
         conjunto += 
         
         `
@@ -38,40 +55,27 @@ socket.on('products', productos => {
                 <img style="height: 54px;" src="${e.thumbnail}" >
               </td>
               <td>
-                <button type="button" id="btnDelete" class="btn btn-danger btn-sm" onclick="deleteProducts(${e.id})">Eliminar</button>
+              <button type="button" class="btn btn-danger btn-sm btnDelete" data-product-id="${e.id}" data-product-data='${JSON.stringify(products)}'>Eliminar</button>
               </td>
             </tr>
         `
-
-        tabla.innerHTML = conjunto
     })
-});
-
-// --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-
-function makeHtmlTable(productos) {
-    return fetch('./views/realTimeProducts.handlebars')
-        .then(respuesta => respuesta.text())
-        .then(plantilla => {
-            const template = Handlebars.compile(plantilla);
-            const html = template({ productos })
-            return html
-        })
-}
-
-//-------------------------------------------------------------------------------------
-      
-
-function deleteProducts(del) {
-    console.log(del);
-    del = del - 1;//Para que borre correctamente. Ya que para borrar la fila se comienza desde 0.
-    if (tabla) {
-        tabla.addEventListener("click", ()=>{ 
-            console.log('delete');
-                tabla.deleteRow(del);
-    });
-}
-} 
 
     
+}else{
+    conjunto = `<tr><td colspan="8"><h3>No hay productos</h3></td></tr>`
+    
+}
+    tabla.innerHTML = conjunto
+    // Agrega oyentes de eventos después de renderizar
+    addDeleteButtonListeners();
+}
+
+function deleteProducts(productId, productData) {
+    console.log(productId);
+    console.log(productData);
+    const newProducts = productData.filter(p => p.id !== parseInt(productId));
+    console.log(newProducts)
+    makeHtmlTable(newProducts);
+}
+

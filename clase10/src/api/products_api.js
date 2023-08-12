@@ -30,14 +30,14 @@ class ProductsApi {
             "stock":120
         },
         {
+            "id":4,
             "title":"Hamburguesa Triple",
             "description":"Hamburguesa triple con queso, tomate, cebolla, lechuga, pepinillos y papas fritas.",
             "product":"Hamburguesa",
             "price":1380,
             "thumbnail":"https://i0.wp.com/www.opportimes.com/wp-content/uploads/2016/04/haburguesa-dos.png?resize=500%2C387&ssl=1",
             "code":"2A32F3228",
-            "stock":189,
-            "id":4
+            "stock":189
         },
         {
             "id":5,
