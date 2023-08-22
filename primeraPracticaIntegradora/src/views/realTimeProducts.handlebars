@@ -1,0 +1,77 @@
+<style>
+    .table td,
+    .table th {
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container mt-2">
+    <div class="jumbotron">
+        <h1>Ingrese un producto</h1>
+        <br>
+
+        <form id="addProduct">
+            <div class="form-group">
+                <label for="title">Titulo</label>
+                <input id="title" class="form-control" type="text" name="title">
+            </div>
+            <div class="form-group">
+                <label for="description">Descripción</label>
+                <input id="description" class="form-control" type="text" name="description">
+            </div>
+            <div class="form-group">
+                <label for="category">Categoría</label>
+                <input id="category" class="form-control" type="text" name="category">
+            </div>
+            <div class="form-group">
+                <label for="price">Precio</label>
+                <input id="price" class="form-control" type="number" name="price">
+            </div>
+            <div class="form-group">
+                <label for="thumbnail">URL de Imagen</label>
+                <input id="thumbnail" class="form-control" type="url" name="thumbnail">
+            </div>
+            <div class="form-group">
+                <label for="code">Código</label>
+                <input id="code" class="form-control" type="text" name="code">
+            </div>
+            
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input id="stock" class="form-control" type="number" name="stock">
+            </div>
+            
+            <button class="btn btn-primary">Enviar</button>
+        </form>
+        <br>
+    <div id="productos">
+    {{#if newProduct.length}}
+        <h2>Menú</h2>
+        <div class="table-responsive" id="tableContainer">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">id</th>
+                <th scope="col">title</th>
+                <th scope="col">description</th>
+                <th scope="col">price</th>
+                <th scope="col">stock</th>
+              </tr>
+            </thead>
+            <tbody id="tabla">
+
+            </tbody>
+          </table>
+    </div>
+    {{else}}
+      <h3>No hay productos</h3>
+    {{/if}}              
+    </div>
+  </div>
+</div>
+
+
+
+<script src="/js/main.js"></script>
+
+    
