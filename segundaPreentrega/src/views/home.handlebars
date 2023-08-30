@@ -7,7 +7,8 @@
 
 <div class="container mt-2">
     <div class="jumbotron">
-
+        <!-- De acá tomo el id del carrito-->
+        <div style="display: none"><input id="carrito" name="cart" type="hydden" value="{{user.cart}}"></div>
 
         <div id="productos">
         {{#if listProducts.length}}
@@ -24,6 +25,10 @@
                     <td>{{this.title}}</td>
                     <td>${{this.price}}</td>
                     <td><img width="100" src={{this.thumbnail}} alt="not found"></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm btnAddtoCart me-2" role="group" aria-label="First group" onclick={addProductToCart("{{this.id}}")} >Agregar</button>
+                        <button class="btn btn-danger btn-sm btnDelete" aria-label="First group" onclick={deleteProductToCart("{{this.id}}")}>Eliminar</button>
+                    </td>
                 </tr>
                 {{/each}}
             </table>
@@ -31,13 +36,13 @@
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <li class="page-item">
-                <a class="page-link" {{#if hasPrevPage}} href="/api/products/home?query={{customQuery}}&page={{prevPage}}&limit={{limitValue}}&sort={{sort}}" {{/if}}>Anterior</a>
+                <a class="page-link" {{#if hasPrevPage}} href="/api/views/products?query={{customQuery}}&page={{prevPage}}&limit={{limitValue}}&sort={{sort}}" {{/if}}>Anterior</a>
                 </li>
                 {{#each arr}}
-                <li class="page-item"><a class="page-link" href="/api/products/home?query={{customQuery}}&page={{this}}&limit={{limitValue}}&sort={{sort}}">{{this}}</a></li>
+                <li class="page-item"><a class="page-link" href="/api/views/products?query={{customQuery}}&page={{this}}&limit={{limitValue}}&sort={{sort}}">{{this}}</a></li>
                 {{/each}}
                 <li class="page-item">
-                <a class="page-link" {{#if hasNextPage}} href="/api/products/home?query={{customQuery}}&page={{nextPage}}&limit={{limitValue}}&sort={{sort}}" {{/if}}>Siguiente</a> 
+                <a class="page-link" {{#if hasNextPage}} href="/api/views/products?query={{customQuery}}&page={{nextPage}}&limit={{limitValue}}&sort={{sort}}" {{/if}}>Siguiente</a> 
                 </li>
             </ul>
         </nav>

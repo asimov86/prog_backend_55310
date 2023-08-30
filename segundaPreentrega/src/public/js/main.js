@@ -44,6 +44,17 @@ function addDeleteButtonListeners() {
     });
 }
 
+function addButtonListeners() {
+    const addButtons = document.querySelectorAll('.btnAddtoCart');
+    addButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const productData = JSON.parse(this.getAttribute('data-product-data'));
+            addProducts(productId, productData);
+        });
+    });
+}
+
 function makeHtmlTable(initialProducts) {
     const tabla = document.getElementById('tabla');
     let conjunto = ''
@@ -65,6 +76,9 @@ function makeHtmlTable(initialProducts) {
                 </td>
                 <td>
                 <button type="button" class="btn btn-danger btn-sm btnDelete" data-product-id="${e._id}" data-product-data='${JSON.stringify(products)}'>Eliminar</button>
+                </td>
+                <td>
+                <button type="button" class="btn btn-primary btn-sm btnAddtoCart" data-product-id="${e._id}" data-product-data='${JSON.stringify(products)}'>Agregar</button>
                 </td>
                 </tr> 
             `
@@ -105,4 +119,45 @@ function makeHtmlTable(initialProducts) {
 function deleteProducts(productId, productData) {
     socket.emit('delete', productId);
 }
+// Agregar al carrito
+function addProducts(productId, productData) {
+    socket.emit('add', productId);
+}
 
+
+
+addProductToCart = async (pid) => {
+
+    const cart = document.getElementById("carrito");
+    cid = cart.value;
+    const options = {
+     method:"POST",
+     body:"",
+     headers:{
+         "Content-Type":"application/json"
+     }
+    };
+ 
+    await fetch(
+     `http://localhost:8080/api/carts/${cid}/products/${pid}`,
+     options
+    )
+ }
+
+ deleteProductFromCart = async (pid) => {
+
+    const cart = document.getElementById("carrito");
+    cid = cart.value;
+    const options = {
+     method:"DELETE",
+     body:"",
+     headers:{
+         "Content-Type":"application/json"
+     }
+    };
+ 
+    await fetch(
+     `http://localhost:8080/api/carts/${cid}/products/${pid}`,
+     options
+    )
+ }

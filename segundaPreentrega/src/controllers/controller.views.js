@@ -1,14 +1,17 @@
 const {Router} = require('express');
 const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
+const CartsDao = require('../DAOs/dbManagers/CartsDao');
 
-const Products = new ProductsDao();
 const router = Router();
 
+
+const Products = new ProductsDao();
+const Carts = new CartsDao();
 
 
 // Render
 
-/* router.get('/realTimeProducts', async (req, res) => {
+router.get('/realTimeProducts', async (req, res) => {
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
@@ -43,7 +46,7 @@ const router = Router();
         arr,
         listExists: true,
     });
-}); */
+});
 
 /* router.get('/realTimeProducts', async (req, res) => {
     const newProduct = await Products.findAll();
@@ -58,7 +61,7 @@ const router = Router();
         listExists: true,});
 }); */
 
-/* router.get('/home', async (req, res) => {
+router.get('/products', async (req, res) => {
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
@@ -96,54 +99,23 @@ const router = Router();
         customQuery:listProducts.customQuery,
         arr:arr,
         listExists: true,});
-}); */
+});
 
-// API
-router.get('/', async (req, res) => {
-    // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
-    let limitValue = parseInt(req.query.limit, 10) || 10;
-    let page = parseInt(req.query.page, 10) || 1;
-    let customQuery = req.query.query;
-    if(!customQuery){
-        customQuery = '';
+//Renderizar carrito
+router.get('/carts/:cid', async (req,res) => {
+    let idC = req.params.cid;
+    let car = '';
+    console.log(idC);
+    car = await Carts.getById(idC);
+    let carP = [];
+    console.log(car);
+    if(!car){
+        carP=null;
+        console.log('error', `Alerta!: El carrito al que intenta acceder no existe. id: ${idC}`);
     }else{
-        customQuery = customQuery.toLowerCase();
-    }
-    let sort = parseInt(req.query.sort) || '';
-    const products = await Products.findAll(customQuery,page,limitValue,sort);
-    res.json({messages: products});
-}) 
-
-
-
-router.get('/:pid', async (req, res) => {
-    const pid = req.params.pid;
-    const prod = await Products.getById(pid);
-    res.json({messages: prod});
-});
-
-router.post('/', async (req, res) => {
-    const { title, description, category, price, thumbnail, code, stock } = req.body;
-    const newProductInfo = { title, description, category, price, thumbnail, code, stock }
-    const newProduct = await Products.insertOne(newProductInfo);
-    res.json({message: newProduct});
-});
-
-router.put('/:pid', async (req, res) => {
-    const item = req.body;
-    const itemId = req.params.pid;
-    const prod = await Products.update(item, itemId);
-    res.json({message:prod});
+        carP =car[0].products;
+    }   
+    res.render('cart.handlebars', {cartP: carP, idCart: idC});
 })
-
-router.delete('/:pid', async (req, res) => {
-    const itemId = req.params.pid;
-    const prod = await Products.deleteById(itemId);
-    res.json({message:prod});
-});
-
-
-
-
 
 module.exports = router;
