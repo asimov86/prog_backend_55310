@@ -19,7 +19,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(session({
     store : MongoStore.create({
-        mongoUrl: "mongodb+srv://mongooseUser:MpMeleWU5BNrhOgg@mongoosecluster0.a4g1hor.mongodb.net/ecommerce55310?retryWrites=true",
+        mongoUrl: 'mongodb', // MongoDB acá tuve que hardcodearlo. No pude traerlo de './public/js/config'
         mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
         ttl:20
     }),
