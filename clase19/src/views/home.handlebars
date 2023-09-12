@@ -5,8 +5,26 @@
     }
 </style>
 
+
+
 <div class="container mt-2">
     <div class="jumbotron">
+        <div >
+            <div>
+                {{!-- Mensaje de bienvenida a usuario de sesión --}}
+                <h2>Bienvenido {{name}} {{lastname}}</h2>
+                <br>
+                <h3>Mail: {{email}}</h3>
+                <h3>Role: {{role}}</h3>
+                <h3>userId: {{id}}</h3>
+            </div>
+            <br>
+            <br>
+            {{!-- Boton de logout --}}
+            <div id="logoutButton" class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <button class="btn-group me-2" role="group" aria-label="First group" onclick="functionLogout()">Logout</button>
+            </div>
+        </div>
         <!-- De acá tomo el id del carrito-->
         <div style="display: none"><input id="carrito" name="cart" type="hydden" value="{{user.cart}}"></div>
 
@@ -53,5 +71,5 @@
     </div>
 </div>
 
-
+<script src="/js/logout.js"></script>
 

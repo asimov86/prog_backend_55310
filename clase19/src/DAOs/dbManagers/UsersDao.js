@@ -10,8 +10,8 @@ class UsersDao {
         return newUser._id
     }
 
-    async findOne(email, password) {
-        const user = await Users.find({ email: email, password: password});
+    async find(email) {
+        const user = await Users.findOne({ email: email});
         return user;
     }
 }

@@ -1,4 +1,4 @@
-const form = document.getElementById('createUserForm');
+/* const form = document.getElementById('createUserForm');
 const response = document.getElementById('response');
 form.addEventListener('submit', event => {
     event.preventDefault();
@@ -20,4 +20,4 @@ form.addEventListener('submit', event => {
     }).then( (response) => response.json())
     .then( data => (response.innerHTML = data.message))
     .catch( (err) => console.log(err) );
-})
+}) */

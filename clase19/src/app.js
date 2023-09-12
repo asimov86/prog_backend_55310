@@ -21,7 +21,7 @@ app.use(session({
     store : MongoStore.create({
         mongoUrl: 'mongodb', // MongoDB acá tuve que hardcodearlo. No pude traerlo de './public/js/config'
         mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
-        ttl:20
+        ttl:1200
     }),
     secret: "secretCode", 
     resave: false, 

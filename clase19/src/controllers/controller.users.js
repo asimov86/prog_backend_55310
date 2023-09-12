@@ -19,10 +19,14 @@ router.post('/', async (req, res) => {
         name,
         lastname,
         email,
-        password
+        password,
+        role
     } 
     const newUser = await Users.insertOne(newUserInfo);
     res.json({message: 'Usuario creado con ID ' + newUser._id});
 });
 
 module.exports = router;
+
+
+//////////////   Este controller.user hasta ahora quedaría deprecado

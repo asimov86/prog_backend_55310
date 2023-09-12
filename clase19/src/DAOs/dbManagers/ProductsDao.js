@@ -5,13 +5,10 @@ class ProductsDao {
         try{
             if(!customQuery){
                 const {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink} = await Products.paginate({}, {limit:Number(limitValue) , page:Number(page),  sort: { price: sort }, lean:true});
-                console.log('Entré')
                 //console.log(docs);
                 return {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink,page,limitValue,sort,customQuery}
             }else{
                 const {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink} = await Products.paginate({category: customQuery}, {limit:Number(limitValue) , page:Number(page),  sort: { price: sort }, lean:true});
-                
-                console.log('Entré en el otro')
                 //console.log(docs);
                 return {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink,page,limitValue,sort,customQuery}
             }

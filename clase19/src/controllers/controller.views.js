@@ -64,8 +64,7 @@ router.get('/realTimeProducts', authSession, async (req, res) => {
 }); */
 
 router.get('/products', authSession, async (req, res) => {
-    const {email, name, role, age} = req.session.user;
-    console.log(email, name, role, age);
+    const {id, email, name, lastname, role} = req.session.user;
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
@@ -75,7 +74,6 @@ router.get('/products', authSession, async (req, res) => {
     }else{
         customQuery = customQuery.toLowerCase();
     }
-    console.log(customQuery);
     let sort = parseInt(req.query.sort) || 1;
     const listProducts = await Products.findAll(customQuery,page,limitValue,sort);
     const allProducts = listProducts.docs;
@@ -102,7 +100,13 @@ router.get('/products', authSession, async (req, res) => {
         sort:listProducts.sort,
         customQuery:listProducts.customQuery,
         arr:arr,
-        listExists: true,});
+        listExists: true,
+        id:id,
+        email:email,
+        name:name,
+        lastname:lastname,
+        role:role,
+    });
 });
 
 //Renderizar carrito

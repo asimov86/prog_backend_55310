@@ -13,7 +13,6 @@ form.addEventListener('submit', evt => {
         }
     }) .then(result=> result.status)
     .then(status=>{
-        console.log(status);
         location.assign("/api/views/products");
       });
     
