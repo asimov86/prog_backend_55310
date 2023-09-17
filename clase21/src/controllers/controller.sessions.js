@@ -1,33 +1,14 @@
 const { Router } = require ("express");
-const UsersDao = require('../DAOs/dbManagers/UsersDao');
+const Users = require('../DAOs/models/user.model');
+//const { getHashedPassword, comparePassword } = require('../utils/bcrypt.js');
+//const { generateToken } = require('../utils/jwt.js');
+const passport = require('passport');
 
 const router = Router();
-const Users = new UsersDao();
 
-router.post('/register', async (req, res) => {
-    try {
-        const {name, lastname, email, password} = req.body;
-        let role = 'user';
-        if (!name || !lastname || !email || !password) {
-            return res.status(404).send({status: 'error', error: 'Valores incompletos.'});
-        }
-        const exists = await Users.find(email);
-        if(exists) {return res.status( 400 ).send({status: 'error', error: 'El usuario ya existe.'});}
-        // Agregado de rol al crear usuario
-        if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
-            role = 'admin';
-        }
-        const newUserInfo = {
-            name,
-            lastname,
-            email,
-            password,
-            role
-        };
-
-        const newUser = await Users.insertOne(newUserInfo);
-        //res.status(201).json({status: 'success', payload: newUser});
-        res.json({message: 'Usuario creado con ID ' + newUser._id});
+router.post('/register', passport.authenticate('register', {failureRedirect:'/failRegister'}), async (req, res) => {
+    try {      
+        return res.status(201).json({message: 'User ' + req.user.email + ' successfully registered'});
     } catch (error) {
         console.log(error);
         res.status(500).json({status: 'error', error: 'Internal Server Error'})
@@ -35,34 +16,28 @@ router.post('/register', async (req, res) => {
 
 });
 
-router.post('/login', async (req, res) => {
-    try {
-        const { email, password} = req.body;
+router.get('/failRegister', (req, res) => {
+    res.json({status: 'error', error: 'Failed to register'});
+});
 
-        if (!email || !password) {
-            return res.status(404).send({status: 'error', error: 'Valores incompletos.'});
+router.post('/login', passport.authenticate('login', {failureRedirect:'/faillogin'}), async (req, res) => {
+    try {
+        if(!req.user) {
+            return res.status( 400 ).json({status: 'error', error: 'Invalid credentials'});  
         }
-        const user = await Users.find(email);
-            if(!user) {
-                return res.status( 400 ).send({status: 'error', error: 'El usuario o la contraseña son invalidos.'});
-            }else{
-                if(user.password === password) {
-                    if (user.role === 'admin'){ 
-                        req.session.admin=true;
-                    }
-                    req.session.user = {id: user._id, email: user.email, name: user.name, lastname:user.lastname, role: user.role};
-                    res.send({status:'Success', message:'Usuario logueado.'});
-                // res.status(201).json({status: 'success', payload: result});
-                }else{
-                    console.log('Contraseña o usuario invalido')
-                    return res.status( 400 ).send({status: 'error', error: 'El usuario o la contraseña son invalidos.'});         
-                }
-            }
+
+        if (req.user.role === 'admin'){ 
+            req.session.admin=true;
+        }
+        req.session.user = {id:req.user._id, email:req.user.email, name:req.user.name, lastname:req.user.lastname, role:req.user.role};
+        return res.status(400).json({status:'Success', message:'User logged in!'});
     } catch (error) {
-        console.log(error);
         res.status(500).json({status: 'error', error: 'Internal Server Error'})
     }
-    
+});
+
+router.get('/faillogin', (req, res) => {
+    res.json({status: 'error', error: 'Login failed'});
 });
 
 router.get('/logout', (req, res) => {
@@ -74,5 +49,21 @@ router.get('/logout', (req, res) => {
         } 
     });
 })
+
+
+router.get('/github', passport.authenticate('github', {scope: ['user:email']}, async(req, res)=>{}));
+
+router.get('/githubcallback', passport.authenticate('github', {failureRedirect: '/login'}), async(req, res)=>{
+    req.session.user = req.user;
+    res.redirect('/api/views/products');
+});
+
+router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
+
+router.get('/googlecallback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
+    // Successful authentication, redirect home.
+    req.session.user = req.user;
+    res.redirect('/api/views/products');
+  });
 
 module.exports = router;

@@ -11,6 +11,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const { MONGODB_URI } = require('./public/js/config');
+const initilizePassport = require('./config/passport.config');
+const passport = require('passport');
 // Middleware configuration
 
 app.use(express.json());
@@ -19,7 +21,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(session({
     store : MongoStore.create({
-        mongoUrl: 'mongodb', // MongoDB acá tuve que hardcodearlo. No pude traerlo de './public/js/config'
+        mongoUrl: 'mongodb+srv://mongooseUser:MpMeleWU5BNrhOgg@mongoosecluster0.a4g1hor.mongodb.net/ecommerce55310?retryWrites=true', // MongoDB acá tuve que hardcodearlo. No pude traerlo de './public/js/config'
         mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
         ttl:1200
     }),
@@ -27,6 +29,10 @@ app.use(session({
     resave: false, 
     saveUninitialized: false
 }));
+
+initilizePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // End middleware configuration
 // Motor de plantillas que utilizará express
