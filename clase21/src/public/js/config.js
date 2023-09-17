@@ -3,5 +3,21 @@ const {config} = require('dotenv');
 config();
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const CLIENTE_ID_GITHUB = process.env.CLIENTE_ID_GITHUB;
+const CLIENT_SECRET_GITHUB = process.env.CLIENT_SECRET_GITHUB;
+const CLIENT_CALLBACK_GITHUB = process.env.CLIENT_CALLBACK_GITHUB;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
+const SECRET_KEY_JWT = process.env.SECRET_KEY_JWT;
 
-module.exports = MONGODB_URI;
+module.exports = {
+    MONGODB_URI,
+    CLIENTE_ID_GITHUB,
+    CLIENT_SECRET_GITHUB,
+    CLIENT_CALLBACK_GITHUB,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_CALLBACK_URL,
+    SECRET_KEY_JWT,
+};

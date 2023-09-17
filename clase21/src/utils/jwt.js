@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
+const { SECRET_KEY_JWT } = require('../public/js/config');
 
-const secretKey = 'mySecret'
+const secretKey = SECRET_KEY_JWT;
 
 const generateToken = user => {
   return jwt.sign({ user }, secretKey, { expiresIn: '300s' })

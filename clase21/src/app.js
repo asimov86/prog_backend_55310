@@ -10,7 +10,7 @@ const io = socketIo(server); // Crea una instancia de socket.io y pásale el ser
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const { MONGODB_URI } = require('./public/js/config');
+const {MONGODB_URI} = require('./public/js/config');
 const initilizePassport = require('./config/passport.config');
 const passport = require('passport');
 // Middleware configuration
@@ -21,7 +21,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(session({
     store : MongoStore.create({
-        mongoUrl: 'mongodb+srv://mongooseUser:MpMeleWU5BNrhOgg@mongoosecluster0.a4g1hor.mongodb.net/ecommerce55310?retryWrites=true', // MongoDB acá tuve que hardcodearlo. No pude traerlo de './public/js/config'
+        mongoUrl: MONGODB_URI, // MongoDB acá tuve que hardcodearlo. No pude traerlo de './public/js/config'
         mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
         ttl:1200
     }),

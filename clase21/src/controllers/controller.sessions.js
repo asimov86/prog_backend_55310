@@ -58,7 +58,7 @@ router.get('/githubcallback', passport.authenticate('github', {failureRedirect: 
     res.redirect('/api/views/products');
 });
 
-router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/googlecallback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
     // Successful authentication, redirect home.

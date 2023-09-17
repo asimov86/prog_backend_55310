@@ -1,18 +1,16 @@
 const passport = require('passport')
 const local = require('passport-local')
-const GithubStrategy = require('passport-github2')
 const jwt = require('passport-jwt')
 const Users = require('../DAOs/models/user.model');
 const { getHashedPassword, comparePassword } = require('../utils/bcrypt')
 const cookieExtractor = require('../utils/cookieExtractor')
+const GithubStrategy = require('passport-github2')
 const GoogleStrategy = require('passport-google-oauth20');
+const { CLIENTE_ID_GITHUB, CLIENT_SECRET_GITHUB, CLIENT_CALLBACK_GITHUB, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL} = require('../public/js/config');
 const LocalStrategy = local.Strategy
 const JWTStrategy = jwt.Strategy
 const ExtractJwt = jwt.ExtractJwt
 
-const clientSecret = process.env.CLIENT_SECRET_GITHUB;
-const clientIDGoogle = process.env.GOOGLE_CLIENT_ID;
-const clientSecretGoogle = process.env.GOOGLE_CLIENT_SECRET;
 
 
 const initilizePassport = () => {
@@ -20,24 +18,20 @@ const initilizePassport = () => {
     'register', //nombre de la estrategia
     new LocalStrategy( // instancia de la clase
       { passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
-        const { name, lastname, email } = req.body
-        console.log(name, lastname, email)
+        const { name, lastname, email } = req.body;
         try {
-          const user = await Users.findOne({email:username})
+          const user = await Users.findOne({email:username});
           if (user) {
             console.log('Usuario ya existe')
             return done(null, false)
           }
-
           const userInfo = {
             name,
             lastname,
             email,
             password: getHashedPassword(password),
           }
-          console.log(userInfo)
           const newUser = await Users.create(userInfo)
-          console.log(newUser)
           done(null, newUser)
         } catch (error) {
           done(`Error al crear el usuario: ${error}`)
@@ -71,9 +65,9 @@ passport.use(
     'github', //nombre de la estrategia
     new GithubStrategy(
       {
-        clientID: "Iv1.40ec8ba414efaa03",
-        clientSecret: clientSecret,
-        callbackURL: "http://localhost:3000/api/sessions/githubcallback"
+        clientID: CLIENTE_ID_GITHUB,
+        clientSecret: CLIENT_SECRET_GITHUB,
+        callbackURL: CLIENT_CALLBACK_GITHUB
       }, async (accessToken, refreshToken, profile, done) => {
         try {
           console.log(profile)
@@ -86,6 +80,7 @@ passport.use(
               lastname: '',
               email: profile._json.email,
               password: '',
+              picture: profile._json.avatar_url,
             }
 
             const newUser = await Users.create(userInfo)
@@ -102,20 +97,23 @@ passport.use(
 
 
 passport.use('google', new GoogleStrategy({
-      clientID: clientIDGoogle,
-      clientSecret: clientSecretGoogle,
-      callbackURL: "http://localhost:3000/api/sessions/googlecallback"
+      clientID: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+      callbackURL: GOOGLE_CALLBACK_URL,
+      scope: ['profile'],
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             console.log(profile);
-            const user = await Users.findOne({ lastname: profile._json.familiy_name })
+            const userEmail = profile.emails[0].value; 
+            const user = await Users.findOne({ email: userEmail })
             
             if (!user) {
                 const userInfo = {
                   name: profile._json.given_name,
                   lastname: profile._json.familiy_name,
-                  email: '',
+                  email: userEmail,
                   password: '',
+                  picture: profile._json.picture,
                 }
     
             const newUser = await Users.create(userInfo)

@@ -64,7 +64,7 @@ router.get('/realTimeProducts', authSession, async (req, res) => {
 }); */
 
 router.get('/products', authSession, async (req, res) => {
-    const {id, email, name, lastname, role} = req.session.user;
+    const {id, email, name, lastname, role, picture} = req.session.user;
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
@@ -106,6 +106,7 @@ router.get('/products', authSession, async (req, res) => {
         name:name,
         lastname:lastname,
         role:role,
+        picture:picture,
     });
 });
 

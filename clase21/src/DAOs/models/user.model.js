@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         default: 'user'
-    }
+    },
+    picture: String,
 });
 
 const Users = mongoose.model(userCollection, userSchema);
