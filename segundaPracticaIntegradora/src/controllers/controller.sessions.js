@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
         const token = generateToken(user._id)
         //return res.json({status:'Success', message:'User logged in!', token});
         res
-        .cookie('authCookie', token, { maxAge: 15000, httpOnly: true })
+        .cookie('authCookie', token, { maxAge: 240000, httpOnly: true })
         .json({ status: 'success', payload: 'New session initialized' })
 
     } catch (error) {
