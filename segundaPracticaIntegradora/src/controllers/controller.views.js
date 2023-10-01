@@ -1,21 +1,20 @@
 const {Router} = require('express');
 const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
 const CartsDao = require('../DAOs/dbManagers/CartsDao');
-const {authSession} = require('../middleware/authSession');
-const { authToken } = require('../utils/jwt');
+const UsersDao = require('../DAOs/dbManagers/UsersDao');
 const passportCall = require('../utils/passport-call');
 const router = Router();
 
 
 const Products = new ProductsDao();
 const Carts = new CartsDao();
-
+const Users = new UsersDao();
 
 // Render
 
 router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
-    const {email, name, role, age} = req.session.user;
-    console.log(email, name, role, age);
+    const uid = req.user.user;
+    const {id, email, name, lastname, role, picture} = await Users.findById(uid);
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
@@ -52,21 +51,10 @@ router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
     });
 });
 
-/* router.get('/realTimeProducts', async (req, res) => {
-    const newProduct = await Products.findAll();
-    console.log(newProduct);
-    const stringifiedProducts = newProduct.map(product => ({
-        ...product.toObject(),
-        _id: product._id.toString()
-    }));
-    console.log(stringifiedProducts);
-    res.render('realTimeProducts.handlebars', { 
-        newProduct: stringifiedProducts,
-        listExists: true,});
-}); */
-
 router.get('/products', passportCall('jwt'), async (req, res) => {
-    const {id, email, name, lastname, role, picture} = req.user;
+    const uid = req.user.user;
+    const {id, email, name, lastname, role, picture} = await Users.findById(uid);
+    
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;

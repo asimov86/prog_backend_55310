@@ -14,6 +14,11 @@ class UsersDao {
         const user = await Users.findOne({ email: email});
         return user;
     }
+
+    async findById(uid) {
+        const user = await Users.findOne({ _id: uid});
+        return user;
+    }
 }
 
 module.exports = UsersDao;

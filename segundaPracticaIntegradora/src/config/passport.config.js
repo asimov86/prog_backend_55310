@@ -74,7 +74,7 @@ passport.use(
           console.log(profile)
 
           const user = await Users.findOne({ email: profile._json.email })
-
+          console.log(user)
           if (!user) {
             const userInfo = {
               name: profile._json.name,
@@ -82,6 +82,8 @@ passport.use(
               email: profile._json.email,
               age: '',
               password: '',
+              cart: '',
+              role: '',
               picture: profile._json.avatar_url,
             }
 
@@ -116,6 +118,8 @@ passport.use('google', new GoogleStrategy({
                   email: userEmail,
                   age: '',
                   password: '',
+                  cart: '',
+                  role: '',
                   picture: profile._json.picture,
                 }
     

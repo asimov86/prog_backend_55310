@@ -9,10 +9,10 @@ const generateToken = user => {
 
 const authToken = (req, res, next) => {
   const authHeader = req.headers.authorization
-  console.log(authHeader)
+  //console.log(authHeader)
   if (!authHeader)
     return res.status(401).json({ status: 'error', error: 'Unauthorized' })
-  console.log(authHeader)
+  //console.log(authHeader)
   const token = authHeader.split(' ')[1]
   console.log(token)
   jwt.verify(token, secretKey, (error, credentials) => {

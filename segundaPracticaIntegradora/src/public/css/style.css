@@ -21,3 +21,18 @@ i {
     border: 1px solid #007bff; /* Agrega un borde al botón */
     color: #fff; /* Cambia el color del texto a blanco */
   }
+
+/* Estilos personalizados */
+body {
+    background-color: #f8f9fa;
+}
+
+.not-found-container {
+    margin-top: 100px;
+}
+
+.not-found-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
