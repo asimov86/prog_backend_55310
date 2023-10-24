@@ -1,0 +1,50 @@
+const {Router} = require('express');
+const jwt = require('../utils/jwt');
+const { generateToken, authToken, verifyJwt} = require('../utils/jwt')
+const UsersDao = require('../DAOs/dbManagers/UsersDao');
+
+const Users = new UsersDao();
+const router = Router();
+
+router.get('/create', (req, res) => {
+    res.render('createUser.handlebars')
+}) 
+
+router.get('/', async (req, res) => {
+    const users = await Users.findAll();
+    res.json({messages: users});
+}) 
+
+router.get('/:uid', async (req, res) => {
+    const uid = req.params.uid;
+    const user = await Users.findById(uid);
+    res.json({messages: user});
+}) 
+
+router.post('/', async (req, res) => {
+    const {name, lastname, email, password} = req.body;
+    const newUserInfo = {
+        name,
+        lastname,
+        email,
+        password,
+        role
+    } 
+    const newUser = await Users.insertOne(newUserInfo);
+    res.json({message: 'Usuario creado con ID ' + newUser._id});
+});
+
+router.get('/confirm/:token', verifyJwt, async (req, res) => {
+
+    //res.json(req.user);
+    console.log(req.user.userId)
+    const confirmUser = await Users.confirmNewUser(req.user.userId);
+    console.log(confirmUser);
+    res.json({message: 'Usuario confirmado.'});
+    // Acá podría verificar el campo modifiedCount para confirmar si fue modificado el campo "confirmed" en el usuario creado.
+});
+
+module.exports = router;
+
+
+//////////////   Este controller.user hasta ahora quedaría deprecado
