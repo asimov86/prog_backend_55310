@@ -1,5 +1,5 @@
-const Carts = require('../models/cart.model');
-const Products = require('../models/product.model');
+const Carts = require('../models/mongo/cart.model');
+const Products = require('../models/mongo/product.model');
 class CartsDao {
     async getById(idC) {
         try{

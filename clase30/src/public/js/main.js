@@ -91,31 +91,6 @@ function makeHtmlTable(initialProducts) {
     addDeleteButtonListeners();
 }
 
-/* function makeHtmlNav(initialProducts) {
-    //const tabla = document.getElementById('tabla');
-    const query = initialProducts.customQuery;
-    //console.log(query);
-    const prevPage = initialProducts.prevPage;
-    const limitValue = initialProducts.limitValue;
-    const sort = initialProducts.sort;
-    const nextPage = initialProducts.nextPage;
-
-    let barraNav = 
-        `<nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-            <li class="page-item">
-                <a class="page-link" href="/api/products/realTimeProducts?query=${query}&page=${prevPage}&limit=${limitValue}&sort=${sort}">Anterior</a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="/api/products/realTimeProducts?query=${query}&page=${nextPage}&limit=${limitValue}&sort=${sort}">Siguiente</a> 
-            </li>
-            </ul>
-        </nav>
-      `;
-      nav.innerHTML = barraNav
-} */
-
 function deleteProducts(productId, productData) {
     socket.emit('delete', productId);
 }
@@ -139,7 +114,7 @@ addProductToCart = async (pid) => {
     };
  
     await fetch(
-     `http://localhost:8080/api/carts/${cid}/products/${pid}`,
+     `http://localhost:3000/api/carts/${cid}/products/${pid}`,
      options
     )
  }
@@ -157,7 +132,7 @@ addProductToCart = async (pid) => {
     };
  
     await fetch(
-     `http://localhost:8080/api/carts/${cid}/products/${pid}`,
+     `http://localhost:3000/api/carts/${cid}/products/${pid}`,
      options
     )
  }

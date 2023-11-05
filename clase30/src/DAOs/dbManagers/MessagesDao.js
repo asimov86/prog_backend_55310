@@ -1,4 +1,4 @@
-const messageModel = require ('../models/message.model');
+const messageModel = require ('../models/mongo/message.model');
 
 ////////////////////////////
 /// Rutas para messages ///

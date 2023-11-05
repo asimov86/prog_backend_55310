@@ -1,5 +1,5 @@
 const { Router } = require ("express");
-const Users = require('../DAOs/models/user.model');
+const Users = require('../DAOs/models/mongo/user.model.js');
 const {comparePassword } = require('../utils/bcrypt.js');
 const passport = require('passport');
 const { generateToken } = require("../utils/jwt");
@@ -61,23 +61,30 @@ router.get('/logout', (req, res) => {
 
 
 
-router.get('/github', passport.authenticate('github', {scope: ['user:email']}, async(req, res)=>{}));
+router.get('/github', passport.authenticate('github', {scope: ['user:email']}));
 
 router.get('/githubcallback', passport.authenticate('github', {session: false, failureRedirect: '/login'}), async(req, res)=>{
     const user = req.user;
-    const token = generateToken(user._id)
-    res.cookie('authCookie', token, { maxAge: 240000, httpOnly: true });
-    res.redirect('/api/views/products');
+    console.log(user);
+    if(req.user.confirmed===true) {
+        const token = generateToken(user._id)
+        res.cookie('authCookie', token, { maxAge: 240000, httpOnly: true });
+        return res.redirect('/api/views/products');
+    }
+    return res.redirect('/api/views/login');
 });
-
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/googlecallback', passport.authenticate('google', {session: false, failureRedirect: '/login' }), async (req, res) => {
     const user = req.user;
-    const token = generateToken(user._id)
-    res.cookie('authCookie', token, { maxAge: 240000, httpOnly: true });
-    res.redirect('/api/views/products');
+    console.log(user);
+    if(req.user.confirmed===true) {
+        const token = generateToken(user._id)
+        res.cookie('authCookie', token, { maxAge: 240000, httpOnly: true });
+        return res.redirect('/api/views/products');
+    }
+    return res.redirect('/api/views/login');
   });
 
 router.get('/current', passportCall('jwt'), (req,res)=>{

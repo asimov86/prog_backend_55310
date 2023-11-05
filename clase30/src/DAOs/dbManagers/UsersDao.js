@@ -1,4 +1,4 @@
-const Users = require('../models/user.model');
+const Users = require('../models/mongo/user.model');
 
 class UsersDao {
     async findAll() {
@@ -10,12 +10,12 @@ class UsersDao {
         return newUser._id
     }
 
-    async confirmNewUser(id) {
+    async confirmNewUser(userId) {
         try {
-            let userExist = await Users.find({_id: id});
+            let userExist = await Users.find({_id: userId});
             if(userExist){
                 const user = await Users.updateOne(
-                    {_id: id}, 
+                    {_id: userId}, 
                     {$set:{
                         confirmed:'true'}
                     }
@@ -29,7 +29,7 @@ class UsersDao {
         
     }
 
-    async find(email) {
+    async getUserByEmail(email) {
         const user = await Users.findOne({ email: email});
         return user;
     }
@@ -38,6 +38,11 @@ class UsersDao {
         const user = await Users.findOne({ _id: uid});
         return user;
     }
+    async findByCart(cid) {
+        const user = await Users.findOne({ cart: cid});
+        return user;
+    }
+
 }
 
 module.exports = UsersDao;

@@ -1,20 +1,22 @@
 const {Router} = require('express');
 const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
 const CartsDao = require('../DAOs/dbManagers/CartsDao');
-const UsersDao = require('../DAOs/dbManagers/UsersDao');
+//const UsersDao = require('../DAOs/dbManagers/UsersDao');
+const usersService = require('../services/service.users.js');
 const passportCall = require('../utils/passport-call');
 const router = Router();
 
 
 const Products = new ProductsDao();
 const Carts = new CartsDao();
-const Users = new UsersDao();
+//const Users = new UsersDao();
 
 // Render
 
 router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
     const uid = req.user.user;
-    const {id, email, name, lastname, role, picture} = await Users.findById(uid);
+    console.log(uid);
+    const {id, email, name, lastname, role, picture} = await usersService.getUserByID(uid);
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
@@ -53,7 +55,8 @@ router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
 
 router.get('/products', passportCall('jwt'), async (req, res) => {
     const uid = req.user.user;
-    const {id, email, name, lastname, role, picture} = await Users.findById(uid);
+    console.log(uid);
+    const {id, email, name, lastname, role, cart, picture} = await usersService.getUserByID(uid);
     
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
@@ -96,6 +99,7 @@ router.get('/products', passportCall('jwt'), async (req, res) => {
         name:name,
         lastname:lastname,
         role:role,
+        cart:cart._id.toString(),
         picture:picture,
     });
 });
