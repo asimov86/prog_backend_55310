@@ -1,7 +1,10 @@
 const passport = require('passport')
 const local = require('passport-local')
 const jwt = require('passport-jwt')
-const Users = require('../DAOs/models/user.model');
+//const Users = require('../DAOs/models/mongo/user.model.js');
+const Users = require('../services/service.users.js');
+const Roles = require('../DAOs/models/mongo/role.model.js');
+const Carts = require('../DAOs/dbManagers/CartsDao.js');
 const { getHashedPassword, comparePassword } = require('../utils/bcrypt')
 const {generateToken} = require('../utils/jwt')
 const cookieExtractor = require('../utils/cookieExtractor')
@@ -10,11 +13,17 @@ const GithubStrategy = require('passport-github2')
 const GoogleStrategy = require('passport-google-oauth20');
 const { v4: uuidv4 } = require('uuid');
 const { CLIENTE_ID_GITHUB, CLIENT_SECRET_GITHUB, CLIENT_CALLBACK_GITHUB, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL} = require('../public/js/config');
+const UserDto = require('../DTO/user.dto.js');
+const CustomErrors = require('../handlers/errors/CustomErrors.js');
+const TYPES_ERRORS = require('../handlers/errors/types.errors.js');
+const generateUserErrorInfo = require('../handlers/errors/info.js');
+const MESSAGES_ERRORS = require('../handlers/errors/messages.errors.js');
+const EnumErrors = require('../handlers/errors/EnumError.js');
 const LocalStrategy = local.Strategy
 const JWTStrategy = jwt.Strategy
 const ExtractJwt = jwt.ExtractJwt
 
-
+const cartManager = new Carts();
 
 const initilizePassport = () => {
   passport.use(
@@ -23,20 +32,46 @@ const initilizePassport = () => {
       { passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
         const { name, lastname, email, age } = req.body;
         try {
-          const user = await Users.findOne({email:username});
-          if (user) {
-            console.log('Usuario ya existe')
-            return done(null, false)
+          if(!name || !lastname || !email || !password || !age) {
+            CustomErrors.createError({
+              name: TYPES_ERRORS.USER_CREATION_ERROR,
+              cause: generateUserErrorInfo({ name, lastname, email, age, password }),
+              message: MESSAGES_ERRORS.USER_CREATION_MESSAGE,
+              code: EnumErrors.INVALID_TYPES_ERROR
+            })
           }
-          const userInfo = {
+          const user = await Users.getUserByEmail(username);
+          if (user) {
+            //console.log('Usuario ya existe')
+            //return done(null, false)
+            CustomErrors.createError({
+              name: TYPES_ERRORS.USER_CREATION_ERROR,
+              cause: generateUserErrorInfo(email),
+              message: MESSAGES_ERRORS.USER_CREATION_MESSAGE,
+              code: EnumErrors.USER_ALREADY_EXISTS_ERROR
+            }) 
+          }
+          let newCart = await cartManager.createCart();
+          let role='user';
+          if (email === 'admincoder@coder.com' && password === 'adminCod3r123') {
+              role = 'admin';
+          }
+          roleName = await Roles.findOne({roleName: role});
+    
+          const userRegister = {
             name,
             lastname,
             email,
             age,
             password: getHashedPassword(password),
+            cart: newCart.toString(),
+            role:roleName._id.toString(),
           }
-          const newUser = await Users.create(userInfo)
-          const userId = newUser.id;
+          const userInfo = new UserDto(userRegister);
+          console.log(userInfo);
+          const newUser = await Users.createUser(userInfo)
+          const userId = newUser._id.toString();
+
           // Generar el código
           const uniqueCode = uuidv4();
           console.log('Código único:', uniqueCode);
@@ -63,7 +98,7 @@ const initilizePassport = () => {
 
           })
 
-          console.log(mail +" //Registro de usuario");
+          console.log(mail +" //Registro de usuario"); 
           ////
 
 
@@ -80,13 +115,28 @@ const initilizePassport = () => {
     new LocalStrategy(
       { usernameField: 'email' }, async (username, password, done) => {
         try {
-          const user = await Users.findOne({ email: username })
+          console.log(password);
+          const user = await Users.getUserByEmail(username)
           if (!user) {
-            console.log("User doesn't exist")
+            //console.log("User doesn't exist")
+            CustomErrors.createError({
+              name: TYPES_ERRORS.USER_LOGIN_ERROR,
+              cause: generateUserErrorInfo({email}),
+              message: MESSAGES_ERRORS.USER_LOGIN_MESSAGE,
+              code: EnumErrors.LOGIN_ERROR
+            }) 
             return done(null, false)
           }
 
-          if (!comparePassword(password, user.password)) return done(null, false)
+          if (!comparePassword(password, user.password)) {
+            //return done(null, false)
+            CustomErrors.createError({
+              name: TYPES_ERRORS.USER_LOGIN_ERROR,
+              cause: generateUserErrorInfo({email}),
+              message: MESSAGES_ERRORS.USER_LOGIN_MESSAGE,
+              code: EnumErrors.LOGIN_ERROR
+            })
+          }
           
           return done(null, user)
         } catch (error) {
@@ -106,25 +156,60 @@ passport.use(
       }, async (accessToken, refreshToken, profile, done) => {
         try {
           console.log(profile)
-
-          const user = await Users.findOne({ email: profile._json.email })
+          const user = await Users.getUserByEmail(profile._json.email)
+          let role='user';
+          if (profile._json.email === 'admincoder@coder.com') {
+              role = 'admin';
+          }
+          roleName = await Roles.findOne({roleName: role});
+          let newCart = await cartManager.createCart();
           console.log(user)
           if (!user) {
-            const userInfo = {
+            const userRegister = {
               name: profile._json.name,
               lastname: '',
               email: profile._json.email,
               age: '',
               password: '',
-              cart: '',
-              role: '',
+              cart: newCart._id.toString(),
+              role: roleName,
               picture: profile._json.avatar_url,
             }
+            const userInfo = new UserDto(userRegister);
+            console.log(userInfo);
+            const newUser = await Users.createUser(userInfo)
+            const userId = newUser._id.toString();
+              // Generar el código
+            const uniqueCode = uuidv4();
+            console.log('Código único:', uniqueCode);
 
-            const newUser = await Users.create(userInfo)
+            // Generar token
+            const token = generateToken({userId, uniqueCode});
+
+            console.log(token);
+
+            //// Enviar mail
+            const mailer = new MailingService();
+            const mail = await mailer.sendSimpleMail({
+                from: "CoderTest",
+                to: "kjvelandia8@gmail.com",
+                subject:"Cuenta de usuario registrado",
+                html:`<div> 
+                        <div>Felicidades has quedado registrado </div>
+                        <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
+                    <a
+                        href="http://localhost:3000/api/users/confirm/${ token }"
+                        target="_blank"
+                    >Confirmar Cuenta</a>
+                    </div>`
+
+            })
+
+            console.log(mail +" //Registro de usuario");
+            ////
             return done(null, newUser)
           }
-
+          
           done(null, user)
         } catch (error) {
           done(null, error)
@@ -143,22 +228,57 @@ passport.use('google', new GoogleStrategy({
         try {
             console.log(profile);
             const userEmail = profile.emails[0].value; 
-            const user = await Users.findOne({ email: userEmail })
-            
+            const user = await Users.getUserByEmail(userEmail)
+            let role='user';
+            if (profile._json.email === 'admincoder@coder.com') {
+                role = 'admin';
+            }
+            roleName = await Roles.findOne({roleName: role});
+            let newCart = await cartManager.createCart();
             if (!user) {
-                const userInfo = {
+                const userRegister = {
                   name: profile._json.given_name,
                   lastname: profile._json.familiy_name,
                   email: userEmail,
                   age: '',
                   password: '',
-                  cart: '',
-                  role: '',
+                  cart: newCart._id.toString(),
+                  role: roleName,
                   picture: profile._json.picture,
                 }
-    
-            const newUser = await Users.create(userInfo)
-            return done(null, newUser)
+                const userInfo = new UserDto(userRegister);
+                console.log(userInfo);
+                const newUser = await Users.createUser(userInfo)
+                const userId = newUser._id.toString();
+                  // Generar el código
+                const uniqueCode = uuidv4();
+                console.log('Código único:', uniqueCode);
+
+                // Generar token
+                const token = generateToken({userId, uniqueCode});
+
+                console.log(token);
+
+                //// Enviar mail
+                const mailer = new MailingService();
+                const mail = await mailer.sendSimpleMail({
+                    from: "CoderTest",
+                    to: "kjvelandia8@gmail.com",
+                    subject:"Cuenta de usuario registrado",
+                    html:`<div> 
+                            <div>Felicidades has quedado registrado </div>
+                            <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
+                        <a
+                            href="http://localhost:3000/api/users/confirm/${ token }"
+                            target="_blank"
+                        >Confirmar Cuenta</a>
+                        </div>`
+
+                })
+
+                console.log(mail +" //Registro de usuario");
+                ////
+                return done(null, newUser)
             }
             done(null, user)
         } catch (error) {
@@ -189,7 +309,7 @@ passport.use(
   })
 
   passport.deserializeUser(async (id, done) => {
-    const user = await Users.findById(id)
+    const user = await Users.getUserByID(id)
     done(null, user)
   })
 

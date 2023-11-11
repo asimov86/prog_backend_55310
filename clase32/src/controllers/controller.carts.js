@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const CartsDao = require('../DAOs/dbManagers/CartsDao');
+const ticketsService = require('../services/service.tickets');
 
 const Carts = new CartsDao();
 const router = Router();
@@ -50,6 +51,12 @@ router.delete('/:cid/products/:pid', async(req, res) =>{
     let idP = req.params.pid;
     const car = await Carts.deleteProduct(idC, idP);
     res.json({ message : car});
+});
+
+router.post('/:cid/purchase', async (req, res) => {
+    let idC = req.params.cid;
+    const ticket = await ticketsService.createTicket(idC);
+    res.json({ message : ticket});
 });
 
 module.exports = router;
