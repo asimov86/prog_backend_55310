@@ -1,9 +1,9 @@
 const {Router} = require('express');
-const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
-const CartsDao = require('../DAOs/dbManagers/CartsDao');
+const ProductsDao = require('../DAOs/dbManagers/ProductsDao.js');
+const CartsDao = require('../DAOs/dbManagers/CartsDao.js');
 //const UsersDao = require('../DAOs/dbManagers/UsersDao');
 const usersService = require('../services/service.users.js');
-const passportCall = require('../utils/passport-call');
+const passportCall = require('../utils/passport-call.js');
 const router = Router();
 
 

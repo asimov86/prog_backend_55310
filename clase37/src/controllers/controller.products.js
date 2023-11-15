@@ -1,6 +1,6 @@
 const {Router} = require('express');
 const authorizationMiddleware = require('../middleware/authorization.js');
-const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
+const ProductsDao = require('../DAOs/dbManagers/ProductsDao.js');
 
 const Products = new ProductsDao();
 const router = Router();
