@@ -1,0 +1,27 @@
+const mongoose = require('mongoose');
+
+
+const ticketCollection = 'ticket';
+const ticketSchema = new mongoose.Schema({
+    code: {
+        type: String,
+        require: true,
+        unique: true
+    },
+    purchase_datetime: {
+        type: Date,
+        require: true
+    },
+    amount: {
+        type: Number,
+        require: true
+    },
+    purcharser: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'user',
+    }
+})
+
+
+const Tickets = mongoose.model(ticketCollection, ticketSchema);
+module.exports = Tickets;
