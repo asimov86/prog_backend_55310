@@ -10,6 +10,7 @@ router.get('/', async (req,res)=>{
 router.post('/', async (req,res)=>{
     const item = req.body;
     const mess =  await message.post(item);
+    req.logger.info(`Mensaje: ${mess}`);
     res.send({status:"success",payload:mess})
 })
 module.exports= router;

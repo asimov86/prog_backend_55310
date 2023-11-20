@@ -14,7 +14,7 @@
         <!-- Campo de correo electrónico -->
         <div class="col-12 position-relative mt-3">
           <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com" name="email" required>
+          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com" name="email" >
           <div class="invalid-tooltip">
             Please enter a valid email.
           </div>
@@ -22,7 +22,7 @@
         <!-- Campo de contraseña -->
         <div class="col-12 position-relative mt-3">
           <label for="validationTooltip02" class="form-label ">Password</label>
-          <input type="password" class="form-control" id="validationTooltip02" placeholder="Password" name="password" required>
+          <input type="password" class="form-control" id="validationTooltip02" placeholder="Password" name="password" >
           <div class="valid-tooltip">
             Looks good!
           </div>
@@ -31,8 +31,8 @@
         <div class="col-12 mt-4">
           <button id="login" class="btn btn-primary btn-block" type="submit">Iniciar sesión</button>
         </div>
-        <div class="col-12 mt-2">
-          <button id="registrate" class="btn btn-block btn-hover" onclick="goToRegister()">Regístrate</button>
+        <div class="col-2 mt-3 mb-3 ">
+            
         </div>
         <!-- Enlaces para iniciar sesión con GitHub y Google -->
 
@@ -41,16 +41,16 @@
             <i class="bi bi-github fs-5"></i>
             </a>
         </div>
-        <div class="col-2 mt-3 mb-3 ">
-            
-        </div>
         <div class="col-5 mt-3 mb-3 btn-hover">
             <a class="btn btn-link fw-semibold btn-block text-secondary" href="/api/sessions/google" type="button">
             <i class="bi bi-google fs-5"></i>
             </a>
         </div>
       </form>
-      
+      <div class="col-12 mt-4">
+        <a id="registrate" class="btn btn-block btn-hovery" href="/api/views/register" type="button">
+          Regístrate  </a>
+      </div>
     </div>
     <div class="col-3">
       3 of 3
@@ -61,6 +61,7 @@
       Col 12
     </div>
   </div>
+  <p id="responseLogin"></p>
 </div>
 
 <script src="/js/login.js"></script>

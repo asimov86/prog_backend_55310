@@ -1,31 +1,30 @@
 const {Router} = require('express');
 const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
 const CartsDao = require('../DAOs/dbManagers/CartsDao');
-const UsersDao = require('../DAOs/dbManagers/UsersDao');
+//const UsersDao = require('../DAOs/dbManagers/UsersDao');
+const usersService = require('../services/service.users.js');
 const passportCall = require('../utils/passport-call');
 const router = Router();
 
 
 const Products = new ProductsDao();
 const Carts = new CartsDao();
-const Users = new UsersDao();
+//const Users = new UsersDao();
 
 // Render
 
 router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
     const uid = req.user.user;
-    const {id, email, name, lastname, role, picture} = await Users.findById(uid);
+    const {id, email, name, lastname, role, picture} = await usersService.getUserByID(uid);
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
-    //console.log(page);
     let customQuery = req.query.query;
     if(!customQuery){
         customQuery = '';
     }else{
         customQuery = customQuery.toLowerCase();
     }
-    console.log(customQuery);
     let sort = parseInt(req.query.sort) || '';
     const products = await Products.findAll(customQuery,page,limitValue,sort);
     const {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink} = products;
@@ -53,7 +52,7 @@ router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
 
 router.get('/products', passportCall('jwt'), async (req, res) => {
     const uid = req.user.user;
-    const {id, email, name, lastname, role, picture} = await Users.findById(uid);
+    const {id, email, name, lastname, role, cart, picture} = await usersService.getUserByID(uid);
     
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
@@ -67,7 +66,6 @@ router.get('/products', passportCall('jwt'), async (req, res) => {
     let sort = parseInt(req.query.sort) || 1;
     const listProducts = await Products.findAll(customQuery,page,limitValue,sort);
     const allProducts = listProducts.docs;
-    //console.log(allProducts);
     const stringifiedProducts = allProducts.map(product => ({
         ...product,
         _id: product._id.toString()
@@ -96,6 +94,7 @@ router.get('/products', passportCall('jwt'), async (req, res) => {
         name:name,
         lastname:lastname,
         role:role,
+        cart:cart._id.toString(),
         picture:picture,
     });
 });
@@ -104,13 +103,11 @@ router.get('/products', passportCall('jwt'), async (req, res) => {
 router.get('/carts/:cid', async (req,res) => {
     let idC = req.params.cid;
     let car = '';
-    console.log(idC);
     car = await Carts.getById(idC);
     let carP = [];
-    console.log(car);
     if(!car){
         carP=null;
-        console.log('error', `Alerta!: El carrito al que intenta acceder no existe. id: ${idC}`);
+        req.logger.error('error', `Alerta!: El carrito al que intenta acceder no existe. id: ${idC}`);
     }else{
         carP =car[0].products;
     }   

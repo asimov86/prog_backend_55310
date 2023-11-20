@@ -9,12 +9,9 @@ const generateToken = user => {
 
 const authToken = (req, res, next) => {
   const authHeader = req.headers.authorization
-  //console.log(authHeader)
   if (!authHeader)
     return res.status(401).json({ status: 'error', error: 'Unauthorized' })
-  //console.log(authHeader)
   const token = authHeader.split(' ')[1]
-  console.log(token)
   jwt.verify(token, secretKey, (error, credentials) => {
     if (error){
       return res.status(403).json({ status: 'error', error: 'Forbidden' })
@@ -38,17 +35,18 @@ const authToken = (req, res, next) => {
 }
  */
 
-const verifyJwt = (req, res, next) => {
-  const token = req.params.token;
-  console.log(token);
-  jwt.verify(token, secretKey, (error, credentials) => {
-    if (error) {
-      return res.status(403).json({ status: 'error', error: 'Forbidden' });
-    }
-    req.user = credentials.user;
-    console.log(req.user);
-    next();
+const verifyJwt = (authToken, req, res, next) => {
+  //const token = req.params.token;
+  return new Promise((resolve, reject) => {
+    jwt.verify(authToken, secretKey, (error, credentials) => {
+      if (error) {
+        return res.status(403).json({ status: 'error', error: 'Forbidden' });
+      }
+      const user = credentials.user;
+      resolve(user);
+    });
   });
+  
 }
 
 module.exports = {

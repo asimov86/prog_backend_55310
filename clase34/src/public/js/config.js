@@ -14,6 +14,7 @@ const SERVICE_MAILING = process.env.SERVICE_MAILING;
 const PORT_MAILING = process.env.PORT_MAILING;
 const USER_MAILING = process.env.USER_MAILING;
 const PASS_MAILING = process.env.PASS_MAILING;
+const ENVIRONMENT = process.env.ENVIRONMENT || 'dev';
 
 module.exports = {
     MONGODB_URI,
@@ -27,5 +28,6 @@ module.exports = {
     SERVICE_MAILING,
     PORT_MAILING,
     USER_MAILING,
-    PASS_MAILING
+    PASS_MAILING,
+    ENVIRONMENT
 };

@@ -12,17 +12,17 @@ const userSchema = new mongoose.Schema({
     age: Number,
     password: {
         type: String,
-        required: true
+        required: false
     },
     cart:{
         type: mongoose.SchemaTypes.ObjectId,
         required: false,
-        ref: "carts"
+        ref: "cart"
     },
     role: {
         type:mongoose.SchemaTypes.ObjectId,
         required: false,
-        ref: "roles"
+        ref: "role"
     },
     picture: String,
     confirmed: {

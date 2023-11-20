@@ -1,16 +1,18 @@
-const messageModel = require ('../models/message.model');
+const messageModel = require ('../models/mongo/message.model');
 
 ////////////////////////////
 /// Rutas para messages ///
 ////////////////////////////
 class Messages{
+    constructor(logger) {
+        this.logger = logger;
+    }
 
     async post(item){
-        console.log(item);
         let{user, message} =item;
-        console.log(user, message);
+        this.logger.info(user, message);
         if ( !message || !user)
-        res.send ({status :"error" , error:" Info Incompleta"})
+        this.logger.info({status :"error" , error:" Info Incompleta"})
         let result =await messageModel.create({
             user,
             message

@@ -17,6 +17,7 @@
                 <h3>Mail: {{email}}</h3>
                 <h3>Role: {{role}}</h3>
                 <h3>userId: {{id}}</h3>
+                <h3>Cart: {{cart}}</h3>
                 <div><img width="100" src={{picture}} alt="not found"></div>
             </div>
             <br>
@@ -27,7 +28,9 @@
             </div>
         </div>
         <!-- De acá tomo el id del carrito-->
-        <div style="display: none"><input id="carrito" name="cart" type="hydden" value="{{user.cart}}"></div>
+        <div>
+            <button id="carrito" name="cart" value="{{cart}}" onclick="purchase()">Comprar</button>
+        </div>
 
         <div id="productos">
         {{#if listProducts.length}}
@@ -46,7 +49,7 @@
                     <td><img width="100" src={{this.thumbnail}} alt="not found"></td>
                     <td>
                         <button class="btn btn-primary btn-sm btnAddtoCart me-2" role="group" aria-label="First group" onclick={addProductToCart("{{this.id}}")} >Agregar</button>
-                        <button class="btn btn-danger btn-sm btnDelete" aria-label="First group" onclick={deleteProductToCart("{{this.id}}")}>Eliminar</button>
+                        <button class="btn btn-danger btn-sm btnDeleteFromCart" aria-label="First group" onclick={deleteProductFromCart("{{this.id}}")}>Eliminar</button>
                     </td>
                 </tr>
                 {{/each}}
@@ -75,4 +78,4 @@
 </div>
 
 <script src="/js/logout.js"></script>
-
+<script src="/js/mainDos.js"></script>

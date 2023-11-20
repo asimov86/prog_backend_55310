@@ -3,7 +3,6 @@ const cookieExtractor = req => {
     if (req && req.cookies) {
       token = req.cookies['authCookie']
     }
-  console.log(token)
     return token
   }
   

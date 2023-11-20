@@ -8,7 +8,6 @@ const router  = Router();
 
 router.get('/:to', async (req, res) => {
     let user = await Users.findOne({email: req.params.to})
-    console.log(user);
     let result=await transport.sendMail({
         //from: req.params.from,
         from: 'kennyjosue8@gmail.com', // mail comercial 
