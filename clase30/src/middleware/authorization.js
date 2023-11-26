@@ -46,20 +46,3 @@ const isPremium = async (req, res, next) => {
   };
   
 module.exports = { isAdmin, isUser, isPremium };
-
-/* 
-// Definir el middleware para la autorización
-const authorize = (roles) => {
-  return (req, res, next) => {
-    const userRole = req.user.role; // Suponiendo que tienes esta información en el objeto req.user
-
-    // Verificar si el rol del usuario tiene permiso para acceder a la ruta
-    if (roles.includes(userRole)) {
-      next(); // Permitir que el flujo continúe hacia el controlador
-    } else {
-      res.status(403).json({ error: 'No tienes permiso para acceder a este recurso' });
-    }
-  };
-};
-
-module.exports = {authorize}; */
