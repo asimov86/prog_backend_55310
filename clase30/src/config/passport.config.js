@@ -8,7 +8,8 @@ const Carts = require('../DAOs/dbManagers/CartsDao.js');
 const { getHashedPassword, comparePassword } = require('../utils/bcrypt')
 const {generateToken} = require('../utils/jwt')
 const cookieExtractor = require('../utils/cookieExtractor')
-const MailingService = require('../services/mailing.js');
+//const MailingService = require('../services/mailing.js');
+const emailNotifications = require('../utils/sendMail.js');
 const GithubStrategy = require('passport-github2')
 const GoogleStrategy = require('passport-google-oauth20');
 const { v4: uuidv4 } = require('uuid');
@@ -19,6 +20,7 @@ const JWTStrategy = jwt.Strategy
 const ExtractJwt = jwt.ExtractJwt
 
 const cartManager = new Carts();
+const emailNotifier = new emailNotifications();
 
 const initilizePassport = () => {
   passport.use(
@@ -63,7 +65,7 @@ const initilizePassport = () => {
           console.log(token);
 
           //// Enviar mail
-          const mailer = new MailingService();
+          /* const mailer = new MailingService();
           const mail = await mailer.sendSimpleMail({
               from: "CoderTest",
               to: "kjvelandia8@gmail.com",
@@ -77,8 +79,27 @@ const initilizePassport = () => {
                   >Confirmar Cuenta</a>
                   </div>`
 
-          })
-
+          }) */
+          const registeredUserNotification = {
+            from: "CoderTest",
+            to: email,
+            subject:"Cuenta de usuario registrado",
+            html:`<div> 
+                      <div>Felicidades has quedado registrado </div>
+                      <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
+                  <a
+                      href="http://localhost:3000/api/users/confirm/${ token }"
+                      target="_blank"
+                  >Confirmar Cuenta</a>
+                  </div>`
+          }
+  
+          const mail = await emailNotifier.sendMail(
+            registeredUserNotification.from, 
+            registeredUserNotification.to, 
+            registeredUserNotification.subject, 
+            registeredUserNotification.html
+          );
           console.log(mail +" //Registro de usuario"); 
           ////
 
@@ -97,6 +118,7 @@ const initilizePassport = () => {
       { usernameField: 'email' }, async (username, password, done) => {
         try {
           const user = await Users.getUserByEmail(username)
+          console.log(user)
           if (!user) {
             console.log("User doesn't exist")
             return done(null, false)
@@ -155,12 +177,11 @@ passport.use(
             console.log(token);
 
             //// Enviar mail
-            const mailer = new MailingService();
-            const mail = await mailer.sendSimpleMail({
-                from: "CoderTest",
-                to: "kjvelandia8@gmail.com",
-                subject:"Cuenta de usuario registrado",
-                html:`<div> 
+            const registeredUserNotification = {
+              from: "CoderTest",
+              to: email,
+              subject:"Cuenta de usuario registrado",
+              html:`<div> 
                         <div>Felicidades has quedado registrado </div>
                         <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
                     <a
@@ -168,8 +189,14 @@ passport.use(
                         target="_blank"
                     >Confirmar Cuenta</a>
                     </div>`
-
-            })
+            }
+           
+            const mail = await emailNotifier.sendMail(
+              registeredUserNotification.from, 
+              registeredUserNotification.to, 
+              registeredUserNotification.subject, 
+              registeredUserNotification.html
+            );
 
             console.log(mail +" //Registro de usuario");
             ////
@@ -226,12 +253,11 @@ passport.use('google', new GoogleStrategy({
                 console.log(token);
 
                 //// Enviar mail
-                const mailer = new MailingService();
-                const mail = await mailer.sendSimpleMail({
-                    from: "CoderTest",
-                    to: "kjvelandia8@gmail.com",
-                    subject:"Cuenta de usuario registrado",
-                    html:`<div> 
+                const registeredUserNotification = {
+                  from: "CoderTest",
+                  to: email,
+                  subject:"Cuenta de usuario registrado",
+                  html:`<div> 
                             <div>Felicidades has quedado registrado </div>
                             <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
                         <a
@@ -239,8 +265,14 @@ passport.use('google', new GoogleStrategy({
                             target="_blank"
                         >Confirmar Cuenta</a>
                         </div>`
+                }
 
-                })
+                const mail = await emailNotifier.sendMail(
+                  registeredUserNotification.from, 
+                  registeredUserNotification.to, 
+                  registeredUserNotification.subject, 
+                  registeredUserNotification.html
+                );
 
                 console.log(mail +" //Registro de usuario");
                 ////

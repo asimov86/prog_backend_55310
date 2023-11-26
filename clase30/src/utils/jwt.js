@@ -20,6 +20,7 @@ const authToken = (req, res, next) => {
       return res.status(403).json({ status: 'error', error: 'Forbidden' })
     }
     req.user = credentials.user
+    console.log(req.user)
     next()
   })
 }

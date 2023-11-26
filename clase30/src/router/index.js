@@ -11,7 +11,7 @@ const router = app =>{
     app.use('/api/users', usersController);
     app.use('/api/products', productsController);
     app.use('/api/carts', cartsController);
-    app.use('/api/chats',messagesController);
+    app.use('/api/chats', messagesController);
     app.use('/api/views', viewsController);
     app.use('/api/sessions', sessionsController);
     app.use('/mail', mailingRouter);

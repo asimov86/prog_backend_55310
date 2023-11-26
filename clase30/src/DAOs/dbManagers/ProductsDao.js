@@ -58,12 +58,12 @@ class ProductsDao {
     };
 
     async insertOne(newProductInfo) {
-        const { title, description, category, price, thumbnail, code, stock } = newProductInfo;
-        // Verifica si alguno de los campos está vacío o ausente
-        if (!title || !description || !category || !price || !thumbnail || !code || !stock) {
-            return { error: "Todos los campos son obligatorios" };
-        }
         try {
+            const { title, description, category, price, thumbnail, code, stock } = newProductInfo;
+            // Verifica si alguno de los campos está vacío o ausente
+            if (!title || !description || !category || !price || !thumbnail || !code || !stock) {
+                return { error: "Todos los campos son obligatorios" };
+            }
             const newProduct = await Products.create(newProductInfo);
             return newProduct._id
         } catch (error) {

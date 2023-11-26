@@ -1,56 +1,54 @@
-const User = require('./service.users.js');
+/* No sé si crear un router de tickets, porque el requerimiento del desafío de la clase 30 indica que se debe llamar a la ruta /:cid/purchase en el router carts. 
+De modo que creé un servicio para crear los tickets y cuando vaya a crear el servicio de carts lo llamaré.
+
+const User = require('../services/service.users');
 const cartModel = require('../DAOs/models/mongo/cart.model.js');
 const productModel = require('../DAOs/models/mongo/product.model.js');
+const Carts = require('../DAOs/dbManagers/CartsDao.js');
 const ticketModel = require('../DAOs/models/mongo/ticket.model.js');
-const TicketDAO = require('../DAOs/dbManagers/ticketsDao.js');
-const TicketDTO = require('../DTO/ticket.dto');
+const Ticket = require('../DAOs/dbManager/ticketsDao.js');
+const CartsDao = require('../DAOs/dbManagers/CartsDao');
 
-const ticketService = new TicketDAO();
+const ticketService = new Ticket();
+//const userService = new User();
 
+const Router = require("express");
+const router = Router();
 
-const getTickets = async () => {
-    try {
-        let result = await ticketService.getAll();
-        return result
-    } catch (error) {
-        throw error;
-    }
-    
-}
+router.get('/', async (req, res) => {
+    let result = await ticketService.getAll();
+    res.send({status:"success",result:result})
+})
 
-const createTicket = async (idC) => {
-    try {
-        /* const {cid} = req.params;
-        let idC = cid; */
+router.post('/:cid/purchase', async (req,res) => {
+    const {cid} = req.params;
+        let idC = cid;
         //Genero codigo unico
         let codeT = await ticketService.createCode();
         //Fecha 
         let purchase_datetime = new Date();
-        //Usuario que realiza la compra
-        let user = await User.getUserByCart(idC);
+        //Usuario que que realiza la compra
+        let user = await User.getUserByCart(cid);
         if(!user){
-            //console.log('User no existe')
-            //req.logger.info( `Error!: El usuario no existe, user: ${user}`);
+            console.log('User no existe')
+            req.logger.log('error', `Error!: El usuario no existe, user: ${user}`);
             //return done(null, false, {message: 'User not found'})
             return res.status(404).send({ status: 404, message: "El usuario no existe!" });
         }
         //Monto total a pagar del carrito
         //
         //Busco los valores del carrito
-        let cart = await cartModel.findOne({_id:idC}).lean().populate('products.product');
+        let cart = await cartModel.findOne({_id:cid}).lean().populate('products.product');
         if(!cart){ 
-            //req.logger.info(`Error!: El carrito no existe, carrito: ${cart}`);
+            req.logger.log('error', `Error!: El carrito no existe, carrito: ${cart}`);
             //return done(null, false, {message: 'Cart not found'})
             return res.send({ status: 400, message: "El carrito no existe!" });
         }
         let addToPayment = 0;
-        let productList = [];
         // Recorro el carrito
         for(let i=0; i<cart.products.length; i++){
             //Busco id, precio, stock, quantity
             const idProduct = cart.products[i].product._id;
-            // Busco el title del producto para guardar la lista de productos
-            const productComplete = await productModel.findById({_id:idProduct});
             const priceProduct = cart.products[i].product.price;
             const stockProduct = cart.products[i].product.stock;
             const quantityProduct = cart.products[i].quantity;
@@ -62,13 +60,6 @@ const createTicket = async (idC) => {
                 // multiplico el precio del producto por la cantidad y lo agrego al pago total
                 addToPayment = addToPayment + priceXQuantity;
                 // Eliminar el producto del carrito por id, una vez que se agrega al pago total
-                const productInfo = {  
-                    productId: idProduct,
-                    title: productComplete.title,
-                    quantity: quantityProduct,
-                    price: priceProduct
-                }
-                productList.push(productInfo);
                 let idP = idProduct.toString();
                 let updateCart = await cartModel.updateOne({
                     _id: idC,
@@ -91,33 +82,28 @@ const createTicket = async (idC) => {
 
             }else{
                //No se realiza la compra.
-               console.log("No se realiza la compra.");
             }
         }
-        const userId = user.id;
-        const ticketRegister = {
-            codeT, 
-            purchase_datetime,
-            productList,
-            addToPayment,
-            userId
-        }
-        const newPurchaseInfo = new TicketDTO(ticketRegister)
+        
         //crear ticket de compra
-        let result = await ticketService.createTicket(newPurchaseInfo);
+        let result = await ticketModel.create({
+                code:codeT, 
+                purchase_datetime, 
+                amount:addToPayment,
+                purcharser:user.id
+        });
         console.log(result);
-        return result
-    } catch (error) {
-        throw error;
-    }
+        req.logger.log('info', `Info!: Compra realizada, ticket: ${codeT}`);
+       // res.redirect('/products');
+        res.send({status:"success",payload:result});
     
-    
-};
+});
 
-module.exports = {
-    createTicket,
-    getTickets,
-}
+router.get('/:oid', async (req, res) => {
+    res.send({status:"success",result:result})
+})
+router.put('/:oid', async (req, res) => {
+    res.send({status:"success",result:result})
+});
 
-
-
+module.exports = router; */

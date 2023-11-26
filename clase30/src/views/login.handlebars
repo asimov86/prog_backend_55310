@@ -14,7 +14,7 @@
         <!-- Campo de correo electrónico -->
         <div class="col-12 position-relative mt-3">
           <label for="exampleFormControlInput1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com" name="email" required>
+          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com" name="email" >
           <div class="invalid-tooltip">
             Please enter a valid email.
           </div>
@@ -22,7 +22,7 @@
         <!-- Campo de contraseña -->
         <div class="col-12 position-relative mt-3">
           <label for="validationTooltip02" class="form-label ">Password</label>
-          <input type="password" class="form-control" id="validationTooltip02" placeholder="Password" name="password" required>
+          <input type="password" class="form-control" id="validationTooltip02" placeholder="Password" name="password" >
           <div class="valid-tooltip">
             Looks good!
           </div>
@@ -58,7 +58,7 @@
   </div>
   <div class="row mt-5 align-items-center">
     <div class="col-12">
-      Col 12
+      <div id="error-message" style="color: red;"></div>
     </div>
   </div>
 </div>

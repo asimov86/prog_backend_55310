@@ -1,9 +1,9 @@
 const {Router} = require('express');
 const jwt = require('../utils/jwt');
 const { generateToken, authToken, verifyJwt} = require('../utils/jwt')
-const UsersDao = require('../DAOs/dbManagers/UsersDao');
+//const UsersDao = require('../DAOs/dbManagers/UsersDao');
 const usersService = require('../services/service.users.js');
-const Users = new UsersDao();
+//const Users = new UsersDao();
 const router = Router();
 
 router.get('/create', (req, res) => {

@@ -25,11 +25,18 @@ router.post('/login', async (req, res) => {
     try {
         const {email, password} = req.body;
         const user = await Users.findOne({email});
-        if(!user) {
-            return res.status( 400 ).json({status: 'error', error: 'Invalid credentials'});  
+        const emailUser = email.trim();
+        if (!user) {
+            return res.status(400).json({ status: 'error', error: 'User not found' });
         }
+
         if (!comparePassword(password, user.password)) {
-            return res.status( 400 ).json({status: 'error', error: 'Invalid credentials'});  
+            return res.status(400).json({ status: 'error', error: 'Incorrect password' });
+        }
+
+        if (!user.confirmed === true) {
+            console.log("User not enabled.")
+            return res.status(400).json({ status: 'error', error: 'User not enabled. Please confirm the email.' });
         }
         req.user = {
             id:user._id, 

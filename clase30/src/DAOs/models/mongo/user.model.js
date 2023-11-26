@@ -28,7 +28,11 @@ const userSchema = new mongoose.Schema({
     confirmed: {
         type: Boolean,
         default: false
-    }
+    },
+    createTimestamp: {
+        type: Date, // Utiliza el tipo de dato Date para almacenar la fecha y hora
+        default: Date.now, // Establece la fecha y hora actual por defecto
+    },
 });
 
 const Users = mongoose.model(userCollection, userSchema);

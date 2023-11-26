@@ -48,7 +48,7 @@
                     <td>${{this.price}}</td>
                     <td><img width="100" src={{this.thumbnail}} alt="not found"></td>
                     <td>
-                        <button class="btn btn-primary btn-sm btnAddtoCart me-2" role="group" aria-label="First group" onclick={addProductToCart("{{this.id}}")} >Agregare</button>
+                        <button class="btn btn-primary btn-sm btnAddtoCart me-2" role="group" aria-label="First group" onclick={addProductToCart("{{this.id}}")} >Agregar</button>
                         <button class="btn btn-danger btn-sm btnDeleteFromCart" aria-label="First group" onclick={deleteProductFromCart("{{this.id}}")}>Eliminar</button>
                     </td>
                 </tr>
@@ -71,7 +71,9 @@
         {{else}}
         <h3>No hay productos</h3>
         {{/if}}
-        
+        <div class="col-12">
+            <div id="error-message" style="color: red;"></div>
+        </div>
     </div>
 
     

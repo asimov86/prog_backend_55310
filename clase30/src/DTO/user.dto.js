@@ -8,7 +8,7 @@ class UserDto {
         this.role = userRegister.role;
         this.cart = userRegister.cart;
         this.picture = userRegister.picture;
-        this.confirmed = userRegister.confirmed;
+        this.confirmed = userRegister.confirmed || false;
     }
 }
 
