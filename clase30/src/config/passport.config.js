@@ -15,6 +15,7 @@ const GoogleStrategy = require('passport-google-oauth20');
 const { v4: uuidv4 } = require('uuid');
 const { CLIENTE_ID_GITHUB, CLIENT_SECRET_GITHUB, CLIENT_CALLBACK_GITHUB, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL} = require('../public/js/config');
 const UserDto = require('../DTO/user.dto.js');
+const MailDto = require('../DTO/mail.dto.js');
 const LocalStrategy = local.Strategy
 const JWTStrategy = jwt.Strategy
 const ExtractJwt = jwt.ExtractJwt
@@ -65,22 +66,7 @@ const initilizePassport = () => {
           console.log(token);
 
           //// Enviar mail
-          /* const mailer = new MailingService();
-          const mail = await mailer.sendSimpleMail({
-              from: "CoderTest",
-              to: "kjvelandia8@gmail.com",
-              subject:"Cuenta de usuario registrado",
-              html:`<div> 
-                      <div>Felicidades has quedado registrado </div>
-                      <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
-                  <a
-                      href="http://localhost:3000/api/users/confirm/${ token }"
-                      target="_blank"
-                  >Confirmar Cuenta</a>
-                  </div>`
-
-          }) */
-          const registeredUserNotification = {
+          const emailStructure = {
             from: "CoderTest",
             to: email,
             subject:"Cuenta de usuario registrado",
@@ -93,14 +79,10 @@ const initilizePassport = () => {
                   >Confirmar Cuenta</a>
                   </div>`
           }
-  
-          const mail = await emailNotifier.sendMail(
-            registeredUserNotification.from, 
-            registeredUserNotification.to, 
-            registeredUserNotification.subject, 
-            registeredUserNotification.html
-          );
-          console.log(mail +" //Registro de usuario"); 
+
+          const emailStructures = new MailDto(emailStructure);
+          const mail = await emailNotifier.sendMail(emailStructures.from, emailStructures.to, emailStructures.subject, emailStructures.html);
+          console.log(emailStructures +" //Registro de usuario"); 
           ////
 
 
@@ -177,7 +159,7 @@ passport.use(
             console.log(token);
 
             //// Enviar mail
-            const registeredUserNotification = {
+            const emailStructure = {
               from: "CoderTest",
               to: email,
               subject:"Cuenta de usuario registrado",
@@ -190,13 +172,9 @@ passport.use(
                     >Confirmar Cuenta</a>
                     </div>`
             }
-           
-            const mail = await emailNotifier.sendMail(
-              registeredUserNotification.from, 
-              registeredUserNotification.to, 
-              registeredUserNotification.subject, 
-              registeredUserNotification.html
-            );
+
+            const emailStructures = new MailDto(emailStructure);
+            const mail = await emailNotifier.sendMail(emailStructures.from, emailStructures.to, emailStructures.subject, emailStructures.html);
 
             console.log(mail +" //Registro de usuario");
             ////
@@ -253,7 +231,7 @@ passport.use('google', new GoogleStrategy({
                 console.log(token);
 
                 //// Enviar mail
-                const registeredUserNotification = {
+                const emailStructure = {
                   from: "CoderTest",
                   to: email,
                   subject:"Cuenta de usuario registrado",
@@ -267,13 +245,8 @@ passport.use('google', new GoogleStrategy({
                         </div>`
                 }
 
-                const mail = await emailNotifier.sendMail(
-                  registeredUserNotification.from, 
-                  registeredUserNotification.to, 
-                  registeredUserNotification.subject, 
-                  registeredUserNotification.html
-                );
-
+                const emailStructures = new MailDto(emailStructure);
+                const mail = await emailNotifier.sendMail(emailStructures.from, emailStructures.to, emailStructures.subject, emailStructures.html);
                 console.log(mail +" //Registro de usuario");
                 ////
                 return done(null, newUser)
