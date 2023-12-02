@@ -17,4 +17,4 @@ const passportCall = strategy => {
   }
 }
 
-module.exports = passportCall
+module.exports = passportCall;

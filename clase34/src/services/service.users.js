@@ -1,4 +1,4 @@
-const {Router} = require('express');
+//const {Router} = require('express');
 const jwt = require('../utils/jwt');
 const { generateToken, authToken, verifyJwt} = require('../utils/jwt')
 const UsersDao = require('../DAOs/dbManagers/UsersDao');
@@ -17,6 +17,14 @@ const getUsers = async () => {
 const getUserByID = async (uid) => {
     try {
         return Users.findById(uid);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getUserByCartId = async (cid) => {
+    try {
+        return Users.findByCartId(cid);
     } catch (error) {
         throw error;
     }
@@ -63,6 +71,7 @@ module.exports = {
     createUser,
     confirmToken,
     getUserByEmail,
-    getUserByCart
+    getUserByCart,
+    getUserByCartId
 };
 

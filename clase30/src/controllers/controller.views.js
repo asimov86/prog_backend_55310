@@ -22,7 +22,6 @@ router.get('/realTimeProducts', passportCall('jwt'), isAdmin, async (req, res, n
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
     let limitValue = parseInt(req.query.limit, 10) || 10;
     let page = parseInt(req.query.page, 10) || 1;
-    //console.log(page);
     let customQuery = req.query.query;
     if(!customQuery){
         customQuery = '';

@@ -1,45 +1,45 @@
 const { Router } = require('express');
 const nodemailer = require('nodemailer');
 //import __dirname from '../utils/
-const UsersDao = require('../../../segundaPracticaIntegradora/src/DAOs/dbManagers/UsersDao');
+const emailNotifications = require('../utils/sendMail');
+const MailDto = require('../DTO/mail.dto');
+const usersService = require('../services/service.users');
 
-const Users = new UsersDao();
+
+const emailNotifier = new emailNotifications();
 const router  = Router();
 
 router.get('/:to', async (req, res) => {
-    let user = await Users.findOne({email: req.params.to})
-    let result=await transport.sendMail({
-        //from: req.params.from,
-        from: 'kennyjosue8@gmail.com', // mail comercial 
-        to: req.params.to,
-        //to: 'kennyjosue8@gmail.com',
-        subject: 'Envío de mail con nodemailer.',
-        html: `
-            <div>
-                <h1>Bienvenido ${user.first_name}</h1>
-                <br>
-                <h3></h3>
+    const email = req.params.to;
+    let user = await usersService.getUserByEmail(email)
 
-                <img src="cid:meme"/>
-            </div>
-        `,
+     //// Enviar mail
+     const emailStructure = {
+        from: 'kennyjosue8@gmail.com',
+        to: email,
+        subject:'Envío de mail con nodemailer.',
+        html:`
+        <div>
+            <h1>Bienvenido ${user.name}</h1>
+            <br>
+            <h3></h3>
+
+            <img src="cid:meme"/>
+        </div>
+    `,
         attachments: [{
             filename: 'meme.jpg',
             path: __dirname + '/public/images/totoro.jpg',
             cid: 'meme'
         }]
-    })
+      }
+
+      const emailStructures = new MailDto(emailStructure);
+      const mail = await emailNotifier.sendMail(emailStructures.from, emailStructures.to, emailStructures.subject, emailStructures.html);
+
+
     res.send({status:"success", result: "Email enviado"})
 });
 
-//pasar esto como variable de entorno
-const transport = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    auth:{
-        user:'kennyjosue8@gmail.com',
-        pass:'iinxysgxpmrjxllk'
-    }
-});
 
 module.exports = router;

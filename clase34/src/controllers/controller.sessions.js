@@ -60,6 +60,10 @@ router.post('/login', async (req, res) => {
                 code: EnumErrors.LOGIN_ERROR
               })  */ 
         }
+        if (!user.confirmed === true) {
+            req.logger.info("User not enabled. Please confirm the email.")
+            return res.status(400).json({ status: 'error', error: 'User not enabled. Please confirm the email.' });
+        }
         req.user = {
             id:user._id, 
             email:user.email, 

@@ -30,8 +30,6 @@ const ticketSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
-            // Otros campos específicos del producto si es necesario
-            // Ejemplo: precio, descripción, etc.
         }
     ],
     amount: {

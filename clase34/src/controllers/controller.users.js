@@ -1,10 +1,10 @@
 const {Router} = require('express');
 const jwt = require('../utils/jwt');
 const { generateToken, authToken, verifyJwt} = require('../utils/jwt')
-const UsersDao = require('../DAOs/dbManagers/UsersDao');
+//const UsersDao = require('../DAOs/dbManagers/UsersDao');
 const usersService = require('../services/service.users.js');
-const generateUsers = require('../utils/mock');
-const Users = new UsersDao();
+//const generateUsers = require('../utils/mock');
+//const Users = new UsersDao();
 const router = Router();
 
 router.get('/mockuser', async (req, res) => {
@@ -77,8 +77,6 @@ router.get('/confirm/:token', async (req, res) => {
     }
     
 });
-
-
 
 module.exports = router;
 

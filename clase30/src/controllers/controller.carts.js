@@ -29,15 +29,9 @@ router.post('/:cid/products/:pid', verifyJwt, isUser, async (req, res) => {
     } catch (error) {
         throw error;
     }
-    l/* et idC = req.params.cid;
-    console.log(idC);
-    let idP = req.params.pid;
-    const car = await Carts.addProductToCart(idC, idP);
-    res.json({ message : car}); */
 });
 
 router.put('/:cid', verifyJwt, isUser, async(req, res) =>{
-
     let idC = req.params.cid;
     const items = req.body;
     const car = await Carts.putProduct(idC, items);

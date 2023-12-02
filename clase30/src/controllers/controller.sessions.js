@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
         }
 
         if (!user.confirmed === true) {
-            console.log("User not enabled.")
+            req.logger.info("User not enabled.")
             return res.status(400).json({ status: 'error', error: 'User not enabled. Please confirm the email.' });
         }
         req.user = {

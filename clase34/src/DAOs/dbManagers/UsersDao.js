@@ -43,6 +43,10 @@ class UsersDao {
         return user;
     }
 
+    async findByCartId(cid) {
+        const user = await Users.findOne({ cart: cid});
+        return user;
+    }
 }
 
 module.exports = UsersDao;

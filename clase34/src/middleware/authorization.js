@@ -1,23 +1,46 @@
-const isAdmin = (req, res, next) => {
+const roles = require('../services/service.roles');
+const user = require('../services/service.users');
+
+const isAdmin = async (req, res, next) => {
     // Verifica si el usuario es un administrador
-    if (req.user && req.user.role === 'admin') {
+  try {
+    const userId = req.user.user;
+    const userDetails = await user.getUserByID(userId);
+    const roleId = userDetails.role;
+    const userRole = await roles.getRoleByID(roleId);
+    if (userRole.roleName === 'admin') {
+      req.logger.info(`Verified token. (isAdmin)`);
       return next(); // Permitir acceso al siguiente middleware o controlador
     }
     return res.status(403).json({ error: 'Acceso denegado' });
+  } catch (error) {
+    throw error;
+  }
+    
   };
   
-const isUser = (req, res, next) => {
+const isUser = async (req, res, next) => {
     // Verifica si el usuario es un usuario regular
-    if (req.user && req.user.role === 'user') {
+    let cid = req.params.cid;
+    const userInfo = await user.getUserByCartId(cid); //;
+    const userId = userInfo._id.toString();
+    const roleId = userInfo.role;
+    const userRole = await roles.getRoleByID(roleId);
+    if (userRole.roleName === 'user') {
+      req.logger.info(`Verified token. (isUser)`);
       return next();
     }
-    return next();
-    //return res.status(403).json({ error: 'Acceso denegado' });
+    return res.status(403).json({ error: 'Acceso denegado' });
   };
 
-const isPremium = (req, res, next) => {
+const isPremium = async (req, res, next) => {
     // Verifica si el usuario es un usuario premium
-    if (req.user && req.user.role === 'premium') {
+    const userId = req.user.user;
+    const userDetails = await user.getUserByID(userId);
+    const roleId = userDetails.role;
+    const userRole = await roles.getRoleByID(roleId);
+    if (userRole.roleName === 'premium') {
+      req.logger.info(`Verified token. (isPremium)`);
       return next();
     }
     return res.status(403).json({ error: 'Acceso denegado' });

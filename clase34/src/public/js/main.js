@@ -59,7 +59,6 @@ function makeHtmlTable(initialProducts) {
     const tabla = document.getElementById('tabla');
     let conjunto = ''
     const products = initialProducts.docs;
-    //console.log(products);
     if (products.length > 0) {
         products.map((e)=> {
             conjunto += 

@@ -1,11 +1,12 @@
 const Carts = require('../models/mongo/cart.model');
-const Products = require('../models/mongo/product.model');
+//const Products = require('../models/mongo/product.model');
+const Products = require('../../services/service.products');
 class CartsDao {
     constructor(logger) {
         this.logger = logger;
     }
 
-    async getById(idC) {
+    async getCartById(idC) {
         try{
             let cart = await Carts.find({_id:idC}).lean().populate('products.product');
             return cart
@@ -23,7 +24,7 @@ class CartsDao {
         }
     }
 
-    async post (idC, idP) {
+    async addProductToCart (idC, idP) {
         try{
             // Busco que ambos existan, carrito y producto.
             // Busco el carrito
@@ -31,7 +32,7 @@ class CartsDao {
             // Si existe le aumento la cantidad sino agrego el id del producto y la cantidad en 1.
     /* db.carts.updateOne({_id:ObjectId("63e2f3aecae487e581d06f70"), products: {$elemMatch: {product: {$eq:23263}}}}, {$set:{"products.$.quantity":6}}) */
             let quantity = 1; 
-            let product = await Products.find({_id:idP});
+            let product = await Products.getById(idP);
             if (!product) {
                 return {error: 'El producto no existe.'};
             }
@@ -65,7 +66,7 @@ class CartsDao {
         }    
     }
 
-    putProduct = async(idC, items) => {
+    async putProduct (idC, items) {
         try {
             let cart = await Carts.find({_id:idC});
             if (!cart){
@@ -82,7 +83,7 @@ class CartsDao {
         }
     }
 
-    putProducts = async(idC, idP, item) => {
+    async putProducts (idC, idP, item) {
         try {
             let cart = await Carts.find({_id:idC});
             if (!cart){
@@ -99,9 +100,9 @@ class CartsDao {
         }
     }
 
-    deleteProduct = async(idC, idP) => {
+    async deleteProduct (idC, idP) {
         try{
-            let product = await Products.find({_id:idP});
+            let product = await Products.getById(idP);
             if (!product) {
                 this.logger.info('El producto no existe.');
                 return res.status(404).json({error: true , message:'El producto no existe.'});
@@ -138,7 +139,7 @@ class CartsDao {
         } 
     }
 
-    deleteProducts = async(idC) => {
+    async deleteProducts (idC) {
         try{
             let cart = await Carts.find({_id: idC});
             let productsCart = cart[0].products;

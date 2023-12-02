@@ -22,14 +22,11 @@ const authToken = (req, res, next) => {
 }
 
 /* const verifyJwt = (token, req, res, next) => {
-
-  console.log(token);
   jwt.verify(token, secretKey, (error, credentials) => {
     if (error){
       return res.status(403).json({ status: 'error', error: 'Forbidden' })
     }
     const user = credentials.user
-    console.log(user)
     return res.status(200).json({ status: 'user verified', user: user })
   })
 }

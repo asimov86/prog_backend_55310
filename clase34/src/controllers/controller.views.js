@@ -1,19 +1,21 @@
 const {Router} = require('express');
-const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
+//const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
+const productsService = require('../services/service.products.js');
 const CartsDao = require('../DAOs/dbManagers/CartsDao');
 //const UsersDao = require('../DAOs/dbManagers/UsersDao');
 const usersService = require('../services/service.users.js');
 const passportCall = require('../utils/passport-call');
+const { isAdmin } = require('../middleware/authorization.js');
 const router = Router();
 
 
-const Products = new ProductsDao();
+//const Products = new ProductsDao();
 const Carts = new CartsDao();
 //const Users = new UsersDao();
 
 // Render
 
-router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
+router.get('/realTimeProducts', passportCall('jwt'), isAdmin, async (req, res, next) => {
     const uid = req.user.user;
     const {id, email, name, lastname, role, picture} = await usersService.getUserByID(uid);
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
@@ -26,7 +28,7 @@ router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
         customQuery = customQuery.toLowerCase();
     }
     let sort = parseInt(req.query.sort) || '';
-    const products = await Products.findAll(customQuery,page,limitValue,sort);
+    const products = await productsService.findAll(customQuery,page,limitValue,sort);
     const {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink} = products;
     // Para la paginación
     let arr = [];
@@ -64,7 +66,7 @@ router.get('/products', passportCall('jwt'), async (req, res) => {
         customQuery = customQuery.toLowerCase();
     }
     let sort = parseInt(req.query.sort) || 1;
-    const listProducts = await Products.findAll(customQuery,page,limitValue,sort);
+    const listProducts = await productsService.findAll(customQuery,page,limitValue,sort);
     const allProducts = listProducts.docs;
     const stringifiedProducts = allProducts.map(product => ({
         ...product,

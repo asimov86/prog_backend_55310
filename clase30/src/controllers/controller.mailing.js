@@ -41,19 +41,7 @@ router.get('/:to', async (req, res) => {
 
 
     res.send({status:"success", result: "Email enviado"})
-
-
-
 });
 
-//pasar esto como variable de entorno
-/* const transport = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    auth:{
-        user:'kennyjosue8@gmail.com',
-        pass:'iinxysgxpmrjxllk'
-    }
-}); */
 
 module.exports = router;
