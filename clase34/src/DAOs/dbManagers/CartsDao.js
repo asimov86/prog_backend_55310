@@ -1,6 +1,10 @@
 const Carts = require('../models/mongo/cart.model');
 //const Products = require('../models/mongo/product.model');
 const Products = require('../../services/service.products');
+const logger = require('../../utils/winston/prodLogger.winston');
+
+
+
 class CartsDao {
     constructor(logger) {
         this.logger = logger;
@@ -34,7 +38,10 @@ class CartsDao {
             let quantity = 1; 
             let product = await Products.getById(idP);
             if (!product) {
-                return {error: 'El producto no existe.'};
+                const error = new Error('El producto no existe.');
+                error.code = 12001; // Asignar un código al error
+                throw error;
+                //return {error: 'El producto no existe.'};
             }
             let cart = await Carts.find({_id: idC});
             let productsCart = cart[0].products;
@@ -42,19 +49,22 @@ class CartsDao {
             // https://es.stackoverflow.com/questions/511479/como-se-accede-a-un-array-de-objetos-en-javascript
 
             if (!cart) {
-                return {error: 'El carrito no existe.'};
+                //return {error: 'El carrito no existe.'};
+                const error = new Error('El carrito no existe.');
+                error.code = 12002; // Asignar un código al error
+                throw error;
             }else{
                 //Buscamos si el carrito tiene productos.
                 if((productsCart).length===0){
-                    this.logger.info("Carrito vacio");
+                    //this.logger.info("Carrito vacio");
                     let carts = await Carts.updateOne({_id: idC}, {$set:{products: {product: idP, quantity:1}}});
                     return carts
                 }else{
-                    this.logger.info("Carrito con productos");
+                    //this.logger.info("Carrito con productos");
                     let carts = await Carts.updateOne({_id: idC, products: {$elemMatch: {product: {$eq:idP}}}}, {$inc:{"products.$.quantity":quantity}});
                     if(carts.matchedCount===0){
                         let newProduct = [{ "product":idP, "quantity":quantity}]
-                        this.logger.info("Producto nuevo, no se debe incrementar sino agregar.")
+                        // this.logger.info("Producto nuevo, no se debe incrementar sino agregar.")
                         let carts = await Carts.updateOne({_id: idC}, {$push:{products:{$each:newProduct}}});
                         return carts
                     }
@@ -62,7 +72,7 @@ class CartsDao {
                 } 
             }
         }catch(error){
-            this.logger.info('No se pudo agregar el producto al carrito.');
+            throw error;
         }    
     }
 

@@ -5,6 +5,7 @@ const isAdmin = async (req, res, next) => {
     // Verifica si el usuario es un administrador
   try {
     const userId = req.user.user;
+    console.log(`User ${userId})`);
     const userDetails = await user.getUserByID(userId);
     const roleId = userDetails.role;
     const userRole = await roles.getRoleByID(roleId);

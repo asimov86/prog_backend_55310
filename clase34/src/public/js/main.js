@@ -6,7 +6,7 @@ addProduct.addEventListener('submit', e => {
     const producto = {
         title: addProduct[0].value,
         description: addProduct[1].value,
-        category: addProduct[2].value,
+        category: addProduct[2].value.toLowerCase(),
         price: parseFloat(addProduct[3].value),
         thumbnail: addProduct[4].value,
         code: addProduct[5].value,
@@ -59,11 +59,10 @@ function makeHtmlTable(initialProducts) {
     const tabla = document.getElementById('tabla');
     let conjunto = ''
     const products = initialProducts.docs;
+    //console.log(products);
     if (products.length > 0) {
-        products.map((e)=> {
-            conjunto += 
-            
-            `
+        conjunto = products.map((e)=> {
+            return `
                 <tr id="${e._id}">
                 <th scope="row">${e._id}</th>
                 <td>${e.title}</td>
@@ -80,8 +79,8 @@ function makeHtmlTable(initialProducts) {
                 <button type="button" class="btn btn-primary btn-sm btnAddtoCart" data-product-id="${e._id}" data-product-data='${JSON.stringify(products)}'>Agregar</button>
                 </td>
                 </tr> 
-            `
-        })
+            `;
+        }).join('');
     }else{
         conjunto = `<tr><td colspan="8"><h3>No hay productos</h3></td></tr>` 
     }
@@ -112,10 +111,27 @@ addProductToCart = async (pid) => {
      }
     };
  
-    await fetch(
+    const response = await fetch(
      `http://localhost:3000/api/carts/${cid}/products/${pid}`,
      options
     )
+    if (response.ok) {
+        const responseData = await response.json();
+        localStorage.setItem('authToken', responseData.token);
+        // Redirigir a la vista /api/views/products
+        location.assign("/api/views/products");
+    } else {
+        // Si la respuesta no es exitosa (por ejemplo, error de autenticación)
+        const errorData = await response.json(); // Parsear la respuesta como un objeto JSON si hay un mensaje de error
+        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+        // Actualizar el DOM para mostrar un mensaje de error
+        // Por ejemplo:
+        // const errorElement = document.getElementById('error-message');
+        // errorElement.innerText = `Error: ${response.status} - ${errorData.message}`;
+        // Dentro de la lógica de manejo de errores
+        
+        errorElement.innerText = `Error: ${response.status} - ${errorData.error}`;
+    }
  }
 
  deleteProductFromCart = async (pid) => {

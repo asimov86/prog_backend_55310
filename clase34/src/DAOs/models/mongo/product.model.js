@@ -20,6 +20,10 @@ const productSchema= new mongoose.Schema({
         type: Date, // Utiliza el tipo de dato Date para almacenar la fecha y hora
         default: Date.now, // Establece la fecha y hora actual por defecto
     },
+    modifyTimestamp: {
+        type: Date, // Utiliza el tipo de dato Date para almacenar la fecha y hora
+        default: Date.now, // Establece la fecha y hora actual por defecto
+    },
 })
 productSchema.plugin(mongoosePaginate);
 const Products = mongoose.model(productCollection,productSchema);

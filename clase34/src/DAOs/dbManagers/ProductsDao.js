@@ -51,7 +51,13 @@ class ProductsDao {
     async update(item, itemId) {
         try {
             let{title, description, category, price, thumbnail, code, stock} =item;
+            /* console.log(itemId);
+            console.log(item);
+            console.log(item);
+            console.log(item);
+            console.log(item); */
             let existProduct = await Products.find({_id: itemId});
+            let modifyTimestamp = new Date();
             if(existProduct && existProduct.length > 0){
                 const prod = await Products.updateOne(
                     {_id: itemId}, 
@@ -62,7 +68,8 @@ class ProductsDao {
                         price:price, 
                         thumbnail:thumbnail, 
                         code:code, 
-                        stock:stock}
+                        stock:stock,
+                        modifyTimestamp:modifyTimestamp}
                     }
                 );
                 return prod 
@@ -70,7 +77,9 @@ class ProductsDao {
                 throw new Error("Product not found");
             }
         } catch (error) {
-            return ("The product could not be updated: " + error.message);
+            error = new Error("The product could not be updated: " + error.message);
+            error.code = 13001; // Asignar un código al error
+            throw error;
         }
     }
 

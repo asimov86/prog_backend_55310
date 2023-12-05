@@ -29,6 +29,8 @@ const insertOne = async (newProductInfo) => {
 
 const update = async (newProductInfo, itemId) => {
     try {
+        //console.log(newProductInfo);
+        //console.log(itemId );
         return Products.update(newProductInfo, itemId);
     } catch (error) {
         throw error;

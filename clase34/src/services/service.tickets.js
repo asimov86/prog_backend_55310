@@ -45,23 +45,18 @@ const createTicket = async (idC) => {
         }
         let addToPayment = 0;
         let productList = [];
-        // Recorro el carrito
+        //Recorro el carrito
         for(let i=0; i<cart.products.length; i++){
             //Busco id, precio, stock, quantity
             const idProduct = cart.products[i].product._id;
             // Busco el title del producto para guardar la lista de productos
             const productComplete = await productModel.findById({_id:idProduct});
             const priceProduct = cart.products[i].product.price;
-            const stockProduct = cart.products[i].product.stock;
             const quantityProduct = cart.products[i].quantity;
-            // Comparo si el stock es mayor a la cantidad de compra del producto.
-            if(stockProduct >= quantityProduct){
-                // si es menor o igual al stock se puede comprar"
-                const newStock = stockProduct - quantityProduct;
-                let priceXQuantity = priceProduct*quantityProduct;
-                // multiplico el precio del producto por la cantidad y lo agrego al pago total
-                addToPayment = addToPayment + priceXQuantity;
-                // Eliminar el producto del carrito por id, una vez que se agrega al pago total
+            let priceXQuantity = priceProduct*quantityProduct;
+            // multiplico el precio del producto por la cantidad y lo agrego al pago total
+            addToPayment = addToPayment + priceXQuantity;
+            // Eliminar el producto del carrito por id, una vez que se agrega al pago total
                 const productInfo = {  
                     productId: idProduct,
                     title: productComplete.title,
@@ -81,19 +76,7 @@ const createTicket = async (idC) => {
                     },
                   }
                 );
-                // Actualizo el stock del producto comprado
-                const updateStockProduct = await productModel.updateOne(
-                    {_id: idP}, 
-                    {$set:{
-                        stock:newStock}
-                    }
-                );
-
-            }else{
-               //No se realiza la compra.
-               req.logger('No se realiza la compra.') 
-            }
-        }    
+        }  
         const userId = user.id;
         const ticketRegister = {
             codeT, 

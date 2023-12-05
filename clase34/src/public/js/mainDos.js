@@ -20,16 +20,23 @@ addProductToCart = async (pid) => {
        )
    
        if (response.ok) {
-           const responseData = await response.json();
-           localStorage.setItem('authToken', responseData.token);
-           // Redirigir a la vista /api/views/products
-           location.assign("/api/views/products");
-           
-       } else {
-           // Si la respuesta no es exitosa (por ejemplo, error de autenticación)
-           const errorData = await response.json(); // Parsear la respuesta como un objeto JSON si hay un mensaje de error
-           errorElement.innerText = `Error: ${response.status} - ${errorData.error}`;
-       }
+        console.log(response);
+        const responseData = await response.json();
+        localStorage.setItem('authToken', responseData.token);
+        // Redirigir a la vista /api/views/products
+        location.assign("/api/views/products");
+    } else {
+        // Si la respuesta no es exitosa (por ejemplo, error de autenticación)
+        const errorData = await response.json(); // Parsear la respuesta como un objeto JSON si hay un mensaje de error
+        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+        // Actualizar el DOM para mostrar un mensaje de error
+        // Por ejemplo:
+        // const errorElement = document.getElementById('error-message');
+        // errorElement.innerText = `Error: ${response.status} - ${errorData.message}`;
+        // Dentro de la lógica de manejo de errores
+        
+        errorElement.innerText = `Error: ${response.status} - ${errorData.message}`;
+    }
  }
 
  deleteProductFromCart = async (pid) => {

@@ -4,6 +4,7 @@ const {isAdmin} = require('../middleware/authorization.js');
 //const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
 const productsService = require('../services/service.products.js');
 const ProductsDTO = require('../DTO/product.dto.js');
+const { authToken, verifyJwt } = require('../utils/jwt.js');
 //const Products = new ProductsDao();
 const router = Router();
 
@@ -32,7 +33,7 @@ router.get('/:pid', async (req, res) => {
     res.json({messages: prod});
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authToken, isAdmin, async (req, res) => {
     const { title, description, category, price, thumbnail, code, stock } = req.body;
     const lowerCategoryProduct = category.toLowerCase();
     const productRegister = { title, description, lowerCategoryProduct, price, thumbnail, code, stock }
@@ -42,7 +43,7 @@ router.post('/', async (req, res) => {
     res.json({message: newProduct});
 });
 
-router.put('/:pid', async (req, res) => {
+router.put('/:pid', authToken, isAdmin, async (req, res) => {
     const productRegister = req.body;
     const itemId = req.params.pid;
     const newProductInfo = new ProductsDTO(productRegister);
@@ -51,7 +52,7 @@ router.put('/:pid', async (req, res) => {
     res.json({message:prod});
 })
 
-router.delete('/:pid', async (req, res) => {
+router.delete('/:pid', authToken, isAdmin, async (req, res) => {
     const itemId = req.params.pid;
     const prod = await productsService.deleteById(itemId);
     req.logger.info(prod)
