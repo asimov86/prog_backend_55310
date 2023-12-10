@@ -9,12 +9,9 @@ const generateToken = user => {
 
 const authToken = (req, res, next) => {
   const authHeader = req.headers.authorization
-  console.log(req.headers)
   if (!authHeader)
     return res.status(401).json({ status: 'error', error: 'Unauthorized' })
-  //console.log(authHeader)
   const token = authHeader.split(' ')[1]
-  console.log(token)
   jwt.verify(token, secretKey, (error, credentials) => {
     if (error){
       return res.status(403).json({ status: 'error', error: 'Forbidden' })
@@ -25,14 +22,11 @@ const authToken = (req, res, next) => {
 }
 
 /* const verifyJwt = (token, req, res, next) => {
-
-  console.log(token);
   jwt.verify(token, secretKey, (error, credentials) => {
     if (error){
       return res.status(403).json({ status: 'error', error: 'Forbidden' })
     }
     const user = credentials.user
-    console.log(user)
     return res.status(200).json({ status: 'user verified', user: user })
   })
 }
@@ -52,8 +46,24 @@ const verifyJwt = (authToken, req, res, next) => {
   
 }
 
+const getTokenData = async (token)=>{
+  let data = null;
+  jwt.verify(token, secretKey, (err, decoded)=>{
+      if (err){
+          console.log('Error al obtener data del token');
+      }else{
+          data = decoded;
+      }
+  });
+  return data;
+};
+
+
+
 module.exports = {
   generateToken,
   authToken,
-  verifyJwt
+  verifyJwt,
+  getTokenData
+  
 }

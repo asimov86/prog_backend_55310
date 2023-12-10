@@ -6,6 +6,11 @@
 </style>
 
 <div class="container mt-2">
+    <div style="display: none"><input id="userId" name="userId" type="hydden" value="{{id}}"></div>
+    <div style="display: none"><input id="currentPage" name="currentPage" type="hydden" value="{{page}}"></div>
+    <div style="display: none"><input id="limit" name="limit" type="hydden" value="{{limit}}"></div>
+    <div style="display: none"><input id="sort" name="sort" type="hydden" value="{{sort}}"></div>
+    <div style="display: none"><input id="newProducts" name="newProducts" type="hydden" value="{{newProduct}}"></div>
     <div class="jumbotron">
         <h1>Ingrese un producto</h1>
         <br>
@@ -44,6 +49,9 @@
             <button class="btn btn-primary">Enviar</button>
         </form>
         <br>
+        <div class="col-12">
+            <div id="error-message" style="color: red;"></div>
+        </div>
     <div id="productos">
     {{#if newProduct.length}}
         <h2>Menú</h2>
@@ -61,19 +69,22 @@
             <tbody id="tabla">
 
             </tbody>
+            <tbody id="tablaDos">
+
+            </tbody>
           </table>
         </div>
         <div id="nav">
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     <li class="page-item">
-                    <a class="page-link" {{#if hasPrevPage}} href="/api/views/realTimeProducts?page={{prevPage}}" {{/if}}>Anterior</a>
+                    <a class="page-link" id="previousPageButton" {{#if hasPrevPage}} href="/api/views/realTimeProducts?page={{prevPage}}" {{/if}} >Anterior</a>
                     </li>
                     {{#each arr}}
                     <li class="page-item"><a class="page-link" href="/api/views/realTimeProducts?query={{customQuery}}&page={{this}}&limit={{limitValue}}&sort={{sort}}">{{this}}</a></li>
                     {{/each}}
                     <li class="page-item">
-                    <a class="page-link" {{#if hasNextPage}} href="/api/views/realTimeProducts?page={{nextPage}}" {{/if}}>Siguiente</a> 
+                    <a class="page-link" id="nextPageButton" {{#if hasNextPage}} href="/api/views/realTimeProducts?page={{nextPage}}" {{/if}}>Siguiente</a> 
                     </li>
                 </ul>
             </nav>
@@ -84,6 +95,7 @@
     {{/if}}              
     </div>
   </div>
+    
 </div>
 
 

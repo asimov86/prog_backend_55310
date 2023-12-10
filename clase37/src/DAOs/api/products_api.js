@@ -1,4 +1,4 @@
-class ProductsApi {
+/* class ProductsApi {
     constructor() {
         this.elements = []
         this.id = 0
@@ -45,3 +45,4 @@ class ProductsApi {
 }
 
 module.exports = ProductsApi
+ */

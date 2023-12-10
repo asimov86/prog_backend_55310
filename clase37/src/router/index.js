@@ -8,10 +8,11 @@ const sessionsController = require('../controllers/controller.sessions');
 const authController = require('../controllers/controller.auth');
 const mailingRouter = require('../controllers/controller.mailing');
 const mockingController = require('../controllers/controller.mocks');
+const loggerController = require('../controllers/controller.logger');
 const errorHandler = require('../middleware/errors');
 
 const router = app =>{
-  
+    app.use('/loggerTest', loggerController);
     app.use('/api/users', usersController);
     app.use('/api/products', productsController);
     app.use('/api/carts', cartsController);

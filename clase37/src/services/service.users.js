@@ -1,4 +1,4 @@
-const {Router} = require('express');
+//const {Router} = require('express');
 const jwt = require('../utils/jwt');
 const { generateToken, authToken, verifyJwt} = require('../utils/jwt')
 const UsersDao = require('../DAOs/dbManagers/UsersDao');
@@ -22,6 +22,14 @@ const getUserByID = async (uid) => {
     }
 }
 
+const getUserByCartId = async (cid) => {
+    try {
+        return Users.findByCartId(cid);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createUser = async (userInfo) => {
     try {
         return Users.insertOne(userInfo)
@@ -34,9 +42,7 @@ const confirmToken = async (authToken) => {
     try {
         // Decodificar el token JWT utilizando verifyJwt
         const user = await verifyJwt(authToken);
-        console.log(user);
         const userId = user.userId;
-        console.log(userId);
         return Users.confirmNewUser(userId);
     } catch (error) {
         throw error;
@@ -59,12 +65,22 @@ const getUserByCart = async (email) => {
     }
 }
 
+const updateUser = async (id, user) => {
+    try {
+        return Users.updateUser(id, user);
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getUsers,
     getUserByID,
     createUser,
     confirmToken,
     getUserByEmail,
-    getUserByCart
+    getUserByCart,
+    getUserByCartId,
+    updateUser
 };
 
