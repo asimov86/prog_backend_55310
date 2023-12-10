@@ -19,11 +19,8 @@ router.get('/realTimeProducts', passportCall('jwt'), isPremiumOrAdmin, async (re
     const uid = req.user.user;
     const {id, email, name, lastname, role, picture} = await usersService.getUserByID(uid);
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
-    console.log(req.query.page);
-    console.log('pagina')
     let limitValue = parseInt(req.query.limit) || 10;
     let numberPage = parseInt(req.query.page) || 1;
-    console.log(numberPage);
     let customQuery = req.query.query;
     if(!customQuery){
         customQuery = '';
@@ -33,8 +30,6 @@ router.get('/realTimeProducts', passportCall('jwt'), isPremiumOrAdmin, async (re
     let sort = parseInt(req.query.sort) || '';
     const products = await productsService.findAll(customQuery,numberPage,limitValue,sort);
     const {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink,page} = products;
-    console.log(docs)
-    console.log(page)
     // Para la paginación
     let arr = [];
     for (let i = 0; i < totalPages; i++) {
