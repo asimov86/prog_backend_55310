@@ -34,6 +34,10 @@ router.post('/:cid/products/:pid', async (req, res) => {
             req.logger.error('Error: Producto sin existencia');
             return res.status(400).json({ status: 'error', code: error.code, message: error.message });
         }
+        if (error.code === 10002) {
+            req.logger.error('Error: El usuario no puede adquirir el producto.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
         if (error.code === 12001) {
             req.logger.error('Error: El producto no existe.');
             return res.status(400).json({ status: 'error', code: error.code, message: error.message });

@@ -1,9 +1,12 @@
 const CartsDao = require('../DAOs/dbManagers/CartsDao');
+const UsersDao = require('../DAOs/dbManagers/UsersDao.js');
 //const products= require('../DAOs/dbManagers/ProductsDao.js');
 const productsService = require('../services/service.products.js');
 const ticketsService = ('../services/service.tickets.js');
+const usersService = ('../services/service.users.js');
 //const Products = new products();
 const Carts = new CartsDao();
+const Users = new UsersDao();
 
 const getCartById = async (idC) => {
     try {
@@ -38,17 +41,16 @@ const addProductToCart = async (idC, idP) => {
                 throw error;
             }
             //busco el owner del producto, si es el mismo id del usuario que está logueado no podrá comprar el producto
-           /*  let ownerProduct = product[0].owner;
+            let ownerProduct = product.owner;
             let idOwnerProduct = ownerProduct.toString();
-            let user = await userModel.find({cart: idC});
-            let idUser= user[0]._id;
+            let user = await Users.findByCartId(idC);
+            let idUser= user._id;
             let idOwner = idUser.toString();
-            console.log(idOwner);
-            console.log(idOwnerProduct); 
             if(idOwnerProduct === idOwner){
-                console.log('El usuario no puede adquirir un producto que ya le pertenece.');
-                return 
-            }*/
+                const error = new Error('El producto ya le pertenece al usuario.');
+                error.code = 10002; // Asignar un código al error
+                throw error;
+            }
             //
             let cart = await Carts.getCartById(idC);
         if(!cart){ 

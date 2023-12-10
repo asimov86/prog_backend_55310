@@ -127,17 +127,22 @@ router.get("/premium/:uid", async (req, res) => {
         console.log(currentRoleId.toString());
         // Se lo pasamos a premium
         // Debo verificar cómo cambiarle al usuario que venga el role a premium?
-        const role = await rolesService.getRoleByName('premium');
-        const roleIdToString = role._id.toString();
-        console.log(roleIdToString);
-        if (currentRoleId === roleIdToString) {
-            console.log('El usuario ya tiene el role premium.');
-        }else{
-            let newRole = {"role" : role._id.toString()};
-            Object.assign(user, newRole);
-            await usersService.updateUser(uid, user);
-            return res.send({ status: "success", message: "El usuario ha cambiado de role." });
+        let newRole = '';
+        const rolePremium = await rolesService.getRoleByName('premium');
+        const roleUser = await rolesService.getRoleByName('user');
+        const rolePremiumIdToString = rolePremium._id.toString();
+        const roleUserIdToString = roleUser._id.toString();
+        if ((currentRoleId._id.toString()) === rolePremiumIdToString) {
+            //console.log('El usuario ya tiene el role premium.');
+            newRole = {"role" : roleUserIdToString};
         }
+        if ((currentRoleId._id.toString()) === roleUserIdToString) {
+            //console.log('El usuario ya tiene el role premium.');
+            newRole = {"role" : rolePremiumIdToString};
+        }
+        Object.assign(user, newRole); 
+        await usersService.updateUser(uid, user);
+        return res.send({ status: "success", message: "El usuario ha cambiado de role."});
     } catch (error) {
 
         console.log(error);
