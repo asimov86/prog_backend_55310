@@ -42,7 +42,6 @@ chatBox.addEventListener('keyup', evt => {
     const messages = data.map(message => {
         return `${message.user} ${message.fyh} dice: ${message.message}<br/>`;
     }).join(""); // Unir todos los mensajes en una cadena
-    console.log(messages);
     log.innerHTML = messages; // Actualizar el contenido del log con los mensajes
 }) */
 

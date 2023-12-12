@@ -13,7 +13,7 @@ const cartSchema= new mongoose.Schema({
         },
       }
     ],
-    timestamp: {
+    createTimestamp: {
         type: Date, // Utiliza el tipo de dato Date para almacenar la fecha y hora
         default: Date.now, // Establece la fecha y hora actual por defecto
     },

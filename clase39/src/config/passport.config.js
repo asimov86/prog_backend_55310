@@ -5,15 +5,17 @@ const jwt = require('passport-jwt')
 const Users = require('../services/service.users.js');
 const Roles = require('../DAOs/models/mongo/role.model.js');
 const Carts = require('../DAOs/dbManagers/CartsDao.js');
-const { getHashedPassword, comparePassword } = require('../utils/bcrypt.js')
-const {generateToken} = require('../utils/jwt.js')
-const cookieExtractor = require('../utils/cookieExtractor.js')
-const MailingService = require('../services/mailing.js');
+const { getHashedPassword, comparePassword } = require('../utils/bcrypt')
+const {generateToken} = require('../utils/jwt')
+const cookieExtractor = require('../utils/cookieExtractor')
+//const MailingService = require('../services/mailing.js');
+const emailNotifications = require('../utils/sendMail.js');
 const GithubStrategy = require('passport-github2')
 const GoogleStrategy = require('passport-google-oauth20');
 const { v4: uuidv4 } = require('uuid');
-const { CLIENTE_ID_GITHUB, CLIENT_SECRET_GITHUB, CLIENT_CALLBACK_GITHUB, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL} = require('../public/js/config.js');
+const { CLIENTE_ID_GITHUB, CLIENT_SECRET_GITHUB, CLIENT_CALLBACK_GITHUB, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL} = require('../public/js/config');
 const UserDto = require('../DTO/user.dto.js');
+const MailDto = require('../DTO/mail.dto.js');
 const CustomErrors = require('../handlers/errors/CustomErrors.js');
 const TYPES_ERRORS = require('../handlers/errors/types.errors.js');
 const generateUserErrorInfo = require('../handlers/errors/info.js');
@@ -24,7 +26,7 @@ const JWTStrategy = jwt.Strategy
 const ExtractJwt = jwt.ExtractJwt
 
 const cartManager = new Carts();
-
+const emailNotifier = new emailNotifications();
 const initilizePassport = () => {
   passport.use(
     'register', //nombre de la estrategia
@@ -42,7 +44,7 @@ const initilizePassport = () => {
           }
           const user = await Users.getUserByEmail(username);
           if (user) {
-            //console.log('Usuario ya existe')
+            //req.logger.info('Usuario ya existe')
             //return done(null, false)
             CustomErrors.createError({
               name: TYPES_ERRORS.USER_CREATION_ERROR,
@@ -69,26 +71,22 @@ const initilizePassport = () => {
             role:roleName._id.toString(),
           }
           const userInfo = new UserDto(userRegister);
-          console.log(userInfo);
           const newUser = await Users.createUser(userInfo)
           const userId = newUser._id.toString();
 
           // Generar el código
           const uniqueCode = uuidv4();
-          console.log('Código único:', uniqueCode);
 
           // Generar token
           const token = generateToken({userId, uniqueCode});
 
-          console.log(token);
 
           //// Enviar mail
-          const mailer = new MailingService();
-          const mail = await mailer.sendSimpleMail({
-              from: "CoderTest",
-              to: "kjvelandia8@gmail.com",
-              subject:"Cuenta de usuario registrado",
-              html:`<div> 
+          const emailStructure = {
+            from: "CoderTest",
+            to: email,
+            subject:"Cuenta de usuario registrado",
+            html:`<div> 
                       <div>Felicidades has quedado registrado </div>
                       <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
                   <a
@@ -96,10 +94,10 @@ const initilizePassport = () => {
                       target="_blank"
                   >Confirmar Cuenta</a>
                   </div>`
+          }
 
-          })
-
-          console.log(mail +" //Registro de usuario"); 
+          const emailStructures = new MailDto(emailStructure);
+          const mail = await emailNotifier.sendMail(emailStructures.from, emailStructures.to, emailStructures.subject, emailStructures.html);
           ////
 
 
@@ -116,10 +114,9 @@ const initilizePassport = () => {
     new LocalStrategy(
       { usernameField: 'email' }, async (username, password, done) => {
         try {
-          console.log(password);
           const user = await Users.getUserByEmail(username)
           if (!user) {
-            //console.log("User doesn't exist")
+            //req.logger.info("User doesn't exist")
             CustomErrors.createError({
               name: TYPES_ERRORS.USER_LOGIN_ERROR,
               cause: generateUserErrorInfo({email}),
@@ -156,7 +153,6 @@ passport.use(
         callbackURL: CLIENT_CALLBACK_GITHUB
       }, async (accessToken, refreshToken, profile, done) => {
         try {
-          console.log(profile)
           const user = await Users.getUserByEmail(profile._json.email)
           let role='user';
           if (profile._json.email === 'admincoder@coder.com') {
@@ -164,7 +160,6 @@ passport.use(
           }
           roleName = await Roles.findOne({roleName: role});
           let newCart = await cartManager.createCart();
-          console.log(user)
           if (!user) {
             const userRegister = {
               name: profile._json.name,
@@ -177,25 +172,18 @@ passport.use(
               picture: profile._json.avatar_url,
             }
             const userInfo = new UserDto(userRegister);
-            console.log(userInfo);
             const newUser = await Users.createUser(userInfo)
             const userId = newUser._id.toString();
               // Generar el código
             const uniqueCode = uuidv4();
-            console.log('Código único:', uniqueCode);
-
             // Generar token
             const token = generateToken({userId, uniqueCode});
-
-            console.log(token);
-
             //// Enviar mail
-            const mailer = new MailingService();
-            const mail = await mailer.sendSimpleMail({
-                from: "CoderTest",
-                to: "kjvelandia8@gmail.com",
-                subject:"Cuenta de usuario registrado",
-                html:`<div> 
+            const emailStructure = {
+              from: "CoderTest",
+              to: email,
+              subject:"Cuenta de usuario registrado",
+              html:`<div> 
                         <div>Felicidades has quedado registrado </div>
                         <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
                     <a
@@ -203,10 +191,10 @@ passport.use(
                         target="_blank"
                     >Confirmar Cuenta</a>
                     </div>`
+            }
 
-            })
-            
-            console.log(mail +" //Registro de usuario");
+            const emailStructures = new MailDto(emailStructure);
+            const mail = await emailNotifier.sendMail(emailStructures.from, emailStructures.to, emailStructures.subject, emailStructures.html);
             ////
             return done(null, newUser)
           }
@@ -227,7 +215,6 @@ passport.use('google', new GoogleStrategy({
       scope: ['profile'],
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            console.log(profile);
             const userEmail = profile.emails[0].value; 
             const user = await Users.getUserByEmail(userEmail)
             let role='user';
@@ -248,25 +235,20 @@ passport.use('google', new GoogleStrategy({
                   picture: profile._json.picture,
                 }
                 const userInfo = new UserDto(userRegister);
-                console.log(userInfo);
                 const newUser = await Users.createUser(userInfo)
                 const userId = newUser._id.toString();
                   // Generar el código
                 const uniqueCode = uuidv4();
-                console.log('Código único:', uniqueCode);
 
                 // Generar token
                 const token = generateToken({userId, uniqueCode});
 
-                console.log(token);
-
                 //// Enviar mail
-                const mailer = new MailingService();
-                const mail = await mailer.sendSimpleMail({
-                    from: "CoderTest",
-                    to: "kjvelandia8@gmail.com",
-                    subject:"Cuenta de usuario registrado",
-                    html:`<div> 
+                const emailStructure = {
+                  from: "CoderTest",
+                  to: email,
+                  subject:"Cuenta de usuario registrado",
+                  html:`<div> 
                             <div>Felicidades has quedado registrado </div>
                             <p>Para confirmar tu cuenta, ingresa al siguiente enlace</p>
                         <a
@@ -274,10 +256,10 @@ passport.use('google', new GoogleStrategy({
                             target="_blank"
                         >Confirmar Cuenta</a>
                         </div>`
+                }
 
-                })
-
-                console.log(mail +" //Registro de usuario");
+                const emailStructures = new MailDto(emailStructure);
+                const mail = await emailNotifier.sendMail(emailStructures.from, emailStructures.to, emailStructures.subject, emailStructures.html);
                 ////
                 return done(null, newUser)
             }

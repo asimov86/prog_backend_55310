@@ -10,8 +10,9 @@ const io = socketIo(server); // Crea una instancia de socket.io y pásale el ser
 const cookieParser = require('cookie-parser');
 const initilizePassport = require('./config/passport.config');
 const passport = require('passport');
-const addLogger = require('./middleware/logger/logger.middleware');
+const addLogger = require('./middleware/logger/logger.middleware')
 const errorHandler = require('./middleware/errors');
+
 //const compression = require('express-compression');
 //const morgan = require('morgan');
 // Middleware configuration
@@ -37,7 +38,9 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', __dirname + '/views');
 MongoConnection.getInstance();
 app.use(addLogger);
+//app.use(errorHandler);
+
 router(app);
-app.use(errorHandler);
+//app.use(errorHandler);
 
 module.exports = {app, server, io};

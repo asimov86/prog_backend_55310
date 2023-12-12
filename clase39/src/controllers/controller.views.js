@@ -1,43 +1,42 @@
 const {Router} = require('express');
-const ProductsDao = require('../DAOs/dbManagers/ProductsDao.js');
-const CartsDao = require('../DAOs/dbManagers/CartsDao.js');
+//const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
+const productsService = require('../services/service.products.js');
+const CartsDao = require('../DAOs/dbManagers/CartsDao');
 //const UsersDao = require('../DAOs/dbManagers/UsersDao');
 const usersService = require('../services/service.users.js');
-const passportCall = require('../utils/passport-call.js');
+const passportCall = require('../utils/passport-call');
+const { isAdmin, isPremium , isPremiumOrAdmin} = require('../middleware/authorization.js');
 const router = Router();
 
 
-const Products = new ProductsDao();
+//const Products = new ProductsDao();
 const Carts = new CartsDao();
 //const Users = new UsersDao();
 
 // Render
 
-router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
+router.get('/realTimeProducts', passportCall('jwt'), isPremiumOrAdmin, async (req, res, next) => {
     const uid = req.user.user;
-    console.log(uid);
     const {id, email, name, lastname, role, picture} = await usersService.getUserByID(uid);
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
-    let limitValue = parseInt(req.query.limit, 10) || 10;
-    let page = parseInt(req.query.page, 10) || 1;
-    //console.log(page);
+    let limitValue = parseInt(req.query.limit) || 10;
+    let numberPage = parseInt(req.query.page) || 1;
     let customQuery = req.query.query;
     if(!customQuery){
         customQuery = '';
     }else{
         customQuery = customQuery.toLowerCase();
     }
-    console.log(customQuery);
     let sort = parseInt(req.query.sort) || '';
-    const products = await Products.findAll(customQuery,page,limitValue,sort);
-    const {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink} = products;
+    const products = await productsService.findAll(customQuery,numberPage,limitValue,sort);
+    const {docs,hasPrevPage,hasNextPage,nextPage,prevPage,totalPages,prevLink,nextLink,page} = products;
     // Para la paginación
     let arr = [];
     for (let i = 0; i < totalPages; i++) {
         arr[i]=i + 1;
       }
     res.render('realTimeProducts.handlebars', { 
-        newProduct: docs,
+        newProduct: JSON.stringify(docs),
         hasPrevPage:hasPrevPage,
         hasNextPage:hasNextPage,
         prevPage:prevPage,
@@ -45,17 +44,18 @@ router.get('/realTimeProducts', passportCall('jwt'), async (req, res) => {
         totalPages:totalPages,
         prevLink:prevLink,
         nextLink:nextLink,
+        page:page,
         limitValue:limitValue,
         sort:sort,
         customQuery:customQuery,
         arr,
         listExists: true,
+        id:uid
     });
 });
 
 router.get('/products', passportCall('jwt'), async (req, res) => {
     const uid = req.user.user;
-    console.log(uid);
     const {id, email, name, lastname, role, cart, picture} = await usersService.getUserByID(uid);
     
     // Agregando límite, si no se agrega el límite trae todo los productos, de traer el límite trae la cantidad indicada.
@@ -68,9 +68,8 @@ router.get('/products', passportCall('jwt'), async (req, res) => {
         customQuery = customQuery.toLowerCase();
     }
     let sort = parseInt(req.query.sort) || 1;
-    const listProducts = await Products.findAll(customQuery,page,limitValue,sort);
+    const listProducts = await productsService.findAll(customQuery,page,limitValue,sort);
     const allProducts = listProducts.docs;
-    //console.log(allProducts);
     const stringifiedProducts = allProducts.map(product => ({
         ...product,
         _id: product._id.toString()
@@ -108,13 +107,11 @@ router.get('/products', passportCall('jwt'), async (req, res) => {
 router.get('/carts/:cid', async (req,res) => {
     let idC = req.params.cid;
     let car = '';
-    console.log(idC);
     car = await Carts.getById(idC);
     let carP = [];
-    console.log(car);
     if(!car){
         carP=null;
-        console.log('error', `Alerta!: El carrito al que intenta acceder no existe. id: ${idC}`);
+        req.logger.error('error', `Alerta!: El carrito al que intenta acceder no existe. id: ${idC}`);
     }else{
         carP =car[0].products;
     }   
@@ -128,5 +125,27 @@ router.get('/register', (req, res) => {
 router.get('/login', (req, res) => {
     res.render('login.handlebars');
 })
+
+//Renderizar reset Password
+router.get('/resetPassword', (req,res) => {
+    res.render('resetPasswordUno.handlebars');
+})
+
+//Renderizar reset Password Dos
+router.get('/resetPasswordDos', (req,res) => {
+    res.render('resetPasswordDos.handlebars');
+});
+
+
+//Renderizar password changed
+router.get ('/renderPasswordChangedSuccesfully', (req,res)=>{
+    /* const { token} = req.params;
+    let data = getTokenData(token);
+    console.log(data);
+    req.logger.info(data); */
+    res.render('passwordChangedSuccessfully.handlebars');
+});
+
+
 
 module.exports = router;

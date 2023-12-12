@@ -1,9 +1,10 @@
 const Tickets = require("../models/mongo/ticket.model");
+
 const { v4: uuidv4 } = require('uuid');
 
 class TicketsDao {
-    constructor() {
-        console.log("Trabajando con MongoDB");
+    constructor(logger) {
+        this.logger = logger;
     }
 
     getAll = async () => {
@@ -12,7 +13,7 @@ class TicketsDao {
             return products;
         }
         catch (error) {
-            console.log(error);
+            this.logger.info(error);
             return null;
         }
 
@@ -24,7 +25,7 @@ class TicketsDao {
             return product;
         }
         catch (error) {
-            console.log(error);
+            this.logger.info(error);
             return null;
         }
 
@@ -36,7 +37,7 @@ class TicketsDao {
             return result;
         }
         catch (error) {
-            console.log(error);
+            this.logger.info(error);
             return null;
         }
 
@@ -48,7 +49,7 @@ class TicketsDao {
             return updateTicket;
         }
         catch (error) {
-            console.log(error);
+            this.logger.info(error);
             return null;
         }
     }
@@ -68,7 +69,7 @@ class TicketsDao {
             return ticketCode;
         }
         catch (error) {
-            console.log(error);
+            this.logger.info(error);
             return null
         }
     }

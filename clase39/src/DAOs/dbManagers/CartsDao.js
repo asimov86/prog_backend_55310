@@ -1,13 +1,21 @@
 const Carts = require('../models/mongo/cart.model');
-const Products = require('../models/mongo/product.model');
+//const Products = require('../models/mongo/product.model');
+const Products = require('../../services/service.products');
+const logger = require('../../utils/winston/prodLogger.winston');
+
+
+
 class CartsDao {
-    async getById(idC) {
+    constructor(logger) {
+        this.logger = logger;
+    }
+
+    async getCartById(idC) {
         try{
-            console.log(idC);
             let cart = await Carts.find({_id:idC}).lean().populate('products.product');
             return cart
         }catch(error){
-            console.log ("No se pudo traer el carrito " + error)
+            this.logger.info("No se pudo traer el carrito.")
         }
     }
 
@@ -16,11 +24,11 @@ class CartsDao {
             const newCart = await Carts.create(product);
             return newCart._id
         }catch(error){
-            console.log ("No se pudo crear el carrito " + error)
+            this.logger.info("No se pudo crear el carrito ")
         }
     }
 
-    async post (idC, idP) {
+    async addProductToCart (idC, idP) {
         try{
             // Busco que ambos existan, carrito y producto.
             // Busco el carrito
@@ -28,29 +36,35 @@ class CartsDao {
             // Si existe le aumento la cantidad sino agrego el id del producto y la cantidad en 1.
     /* db.carts.updateOne({_id:ObjectId("63e2f3aecae487e581d06f70"), products: {$elemMatch: {product: {$eq:23263}}}}, {$set:{"products.$.quantity":6}}) */
             let quantity = 1; 
-            let product = await Products.find({_id:idP});
+            let product = await Products.getById(idP);
             if (!product) {
-                return {error: 'El producto no existe.'};
+                const error = new Error('El producto no existe.');
+                error.code = 12001; // Asignar un código al error
+                throw error;
+                //return {error: 'El producto no existe.'};
             }
             let cart = await Carts.find({_id: idC});
             let productsCart = cart[0].products;
             // Esto debo mejorarlo con esto>
             // https://es.stackoverflow.com/questions/511479/como-se-accede-a-un-array-de-objetos-en-javascript
-            console.log(productsCart);
+
             if (!cart) {
-                return {error: 'El carrito no existe.'};
+                //return {error: 'El carrito no existe.'};
+                const error = new Error('El carrito no existe.');
+                error.code = 12002; // Asignar un código al error
+                throw error;
             }else{
                 //Buscamos si el carrito tiene productos.
                 if((productsCart).length===0){
-                    console.log("Carrito vacio");
+                    //this.logger.info("Carrito vacio");
                     let carts = await Carts.updateOne({_id: idC}, {$set:{products: {product: idP, quantity:1}}});
                     return carts
                 }else{
-                    console.log("Carrito con productos");
+                    //this.logger.info("Carrito con productos");
                     let carts = await Carts.updateOne({_id: idC, products: {$elemMatch: {product: {$eq:idP}}}}, {$inc:{"products.$.quantity":quantity}});
                     if(carts.matchedCount===0){
                         let newProduct = [{ "product":idP, "quantity":quantity}]
-                        console.log("Producto nuevo, no se debe incrementar sino agregar.")
+                        // this.logger.info("Producto nuevo, no se debe incrementar sino agregar.")
                         let carts = await Carts.updateOne({_id: idC}, {$push:{products:{$each:newProduct}}});
                         return carts
                     }
@@ -58,15 +72,15 @@ class CartsDao {
                 } 
             }
         }catch(error){
-            console.log ("No se pudo agregar el producto al carrito " + error)
+            throw error;
         }    
     }
 
-    putProduct = async(idC, items) => {
+    async putProduct (idC, items) {
         try {
             let cart = await Carts.find({_id:idC});
             if (!cart){
-                req.logger.log('error', 'El carrito no existe.');
+                this.logger.info('error', 'El carrito no existe.');
                 return res.status(404).json({error: true , message:'El carrito no existe.'});
             }else{
                     await Carts.updateOne({_id: idC }, {$unset : {"products":1}});
@@ -75,15 +89,15 @@ class CartsDao {
             }
 
         } catch (error) {
-            console.log ("No se pudo modificar el carrito " + error)
+            this.logger.info("No se pudo modificar el carrito ")
         }
     }
 
-    putProducts = async(idC, idP, item) => {
+    async putProducts (idC, idP, item) {
         try {
             let cart = await Carts.find({_id:idC});
             if (!cart){
-                req.logger.log('error', 'El carrito no existe.');
+                this.logger.info('error', 'El carrito no existe.');
                 return res.status(404).json({error: true , message:'El carrito no existe.'});
             }else{
                     let number = item.findIndex(item => item.product === idP);
@@ -92,21 +106,21 @@ class CartsDao {
                     return cart     
             }
         } catch (error) {
-            console.log ("No se pudo agregar los productos al carrito. " + error)
+            this.logger.info("No se pudo agregar los productos al carrito.")
         }
     }
 
-    deleteProduct = async(idC, idP) => {
+    async deleteProduct (idC, idP) {
         try{
-            let product = await Products.find({_id:idP});
+            let product = await Products.getById(idP);
             if (!product) {
-                req.logger.log('error', 'El producto no existe.');
+                this.logger.info('El producto no existe.');
                 return res.status(404).json({error: true , message:'El producto no existe.'});
             }
             let cart = await Carts.find({_id: idC});
             let productsCart = cart[0].products;
             if (!cart) {
-                req.logger.log('error', 'El carrito no existe.');
+                this.logger.info('El carrito no existe.');
                 return res.status(404).json({error: true , message:'El carrito no existe.'});
             }else{
                 //Buscamos si el carrito tiene productos.
@@ -126,20 +140,21 @@ class CartsDao {
                         },
                       }
                     );
+                    
                     return cart    
                 } 
             }
-        }catch{
-            console.log ("No se pudo borrar el producto del carrito. " + error)
+        }catch(error){
+            this.logger.info("No se pudo borrar el producto del carrito.")
         } 
     }
 
-    deleteProducts = async(idC) => {
+    async deleteProducts (idC) {
         try{
             let cart = await Carts.find({_id: idC});
             let productsCart = cart[0].products;
             if (!cart) {
-                req.logger.log('error', 'El carrito no existe.');
+                this.logger.info('El carrito no existe.');
                 return res.status(404).json({error: true , message:'El carrito no existe.'});
             }else{
                 //Buscamos si el carrito tiene productos.
@@ -152,9 +167,8 @@ class CartsDao {
                     return cart   
                 } 
             }
-        }catch{
-            req.logger.log('error', 'No se pudo borrar los productos del carrito.'+ error.message);
-            console.log ("No se pudo borrar los productos del carrito. " + error)
+        }catch(error){
+            this.logger.info('No se pudo borrar los productos del carrito.');
         } 
     }
 }

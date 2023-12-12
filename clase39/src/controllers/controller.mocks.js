@@ -8,7 +8,7 @@ router.get('/mockingproducts', async (req, res) => {
         const products = generateProducts(numProducts);
         res.json({payload: products});
     } catch (error) {
-        console.log(error)
+        req.logger.error(error)
         res.status(500).json({status:'error', error: error})
     }
 });

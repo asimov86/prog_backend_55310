@@ -8,10 +8,27 @@ const sessionsController = require('../controllers/controller.sessions');
 const authController = require('../controllers/controller.auth');
 const mailingRouter = require('../controllers/controller.mailing');
 const mockingController = require('../controllers/controller.mocks');
+const loggerController = require('../controllers/controller.logger');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUiExpress = require('swagger-ui-express');
 const errorHandler = require('../middleware/errors');
+const swaggerOption={
+  definition: {
+    openapi: '3.0.1',
+    info: {
+      title: 'Documentación de las APIS',
+      description: 'APIS que contiene nuestro proyecto',
+    }
+  },
+  apis: ['./docs/**.yaml']
+}
+
+const specs = swaggerJsdoc(swaggerOption);
+
 
 const router = app =>{
-  
+    app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs) );
+    app.use('/loggerTest', loggerController);
     app.use('/api/users', usersController);
     app.use('/api/products', productsController);
     app.use('/api/carts', cartsController);

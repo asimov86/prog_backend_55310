@@ -1,7 +1,7 @@
 const EnumErrors = require("../../handlers/errors/EnumError");
 
 const errorHandler = (error,req,res,next)=>{
-    console.log(error.cause);
+    
     switch(error.code){
         case EnumErrors.DATABASE_ERROR:
             res.json({status:"Error", error:error.name})

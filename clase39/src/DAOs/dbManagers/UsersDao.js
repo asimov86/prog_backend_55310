@@ -24,7 +24,7 @@ class UsersDao {
             }   
             
         } catch (error) {
-            console.log ("No se pudo actualizar el usuario. " + error)
+            return ("No se pudo actualizar el usuario. " + error.message);
         }
         
     }
@@ -35,14 +35,34 @@ class UsersDao {
     }
 
     async findById(uid) {
-        const user = await Users.findOne({ _id: uid});
-        return user;
+        try {
+            const user = await Users.findOne({ _id: uid});
+            if (!user) {
+                const error = new Error(`Error!: El usuario ${uid} no existe.`);
+                error.code = 14001; // Asignar un código al error
+                throw error;
+            }
+            return user;
+        } catch (error) {
+            throw error;
+        }
+        
     }
     async findByCart(cid) {
         const user = await Users.findOne({ cart: cid});
         return user;
     }
 
+    async findByCartId(cid) {
+        const user = await Users.findOne({ cart: cid});
+        return user;
+    }
+
+    async updateUser(id, user){
+        //delete user._id;
+        const result = await Users.updateOne({ _id: id }, { $set: user });
+        return result;
+    };
 }
 
 module.exports = UsersDao;

@@ -2,9 +2,11 @@ const User = require('./service.users.js');
 const cartModel = require('../DAOs/models/mongo/cart.model.js');
 const productModel = require('../DAOs/models/mongo/product.model.js');
 const ticketModel = require('../DAOs/models/mongo/ticket.model.js');
-const Ticket = require('../DAOs/dbManagers/ticketsDao.js');
-
-const ticketService = new Ticket();
+const TicketDAO = require('../DAOs/dbManagers/ticketsDao.js');
+const TicketDTO = require('../DTO/ticket.dto');
+const winstonLogger = require('../utils/winston/prodLogger.winston'); 
+const ticketService = new TicketDAO(winstonLogger);
+ 
 
 
 const getTickets = async () => {
@@ -28,8 +30,7 @@ const createTicket = async (idC) => {
         //Usuario que realiza la compra
         let user = await User.getUserByCart(idC);
         if(!user){
-            console.log('User no existe')
-            req.logger.log('error', `Error!: El usuario no existe, user: ${user}`);
+            //req.logger.info( `Error!: El usuario no existe, user: ${user}`);
             //return done(null, false, {message: 'User not found'})
             return res.status(404).send({ status: 404, message: "El usuario no existe!" });
         }
@@ -38,26 +39,31 @@ const createTicket = async (idC) => {
         //Busco los valores del carrito
         let cart = await cartModel.findOne({_id:idC}).lean().populate('products.product');
         if(!cart){ 
-            req.logger.log('error', `Error!: El carrito no existe, carrito: ${cart}`);
+            //req.logger.info(`Error!: El carrito no existe, carrito: ${cart}`);
             //return done(null, false, {message: 'Cart not found'})
             return res.send({ status: 400, message: "El carrito no existe!" });
         }
         let addToPayment = 0;
-        // Recorro el carrito
+        let productList = [];
+        //Recorro el carrito
         for(let i=0; i<cart.products.length; i++){
             //Busco id, precio, stock, quantity
             const idProduct = cart.products[i].product._id;
+            // Busco el title del producto para guardar la lista de productos
+            const productComplete = await productModel.findById({_id:idProduct});
             const priceProduct = cart.products[i].product.price;
-            const stockProduct = cart.products[i].product.stock;
             const quantityProduct = cart.products[i].quantity;
-            // Comparo si el stock es mayor a la cantidad de compra del producto.
-            if(stockProduct >= quantityProduct){
-                // si es menor o igual al stock se puede comprar"
-                const newStock = stockProduct - quantityProduct;
-                let priceXQuantity = priceProduct*quantityProduct;
-                // multiplico el precio del producto por la cantidad y lo agrego al pago total
-                addToPayment = addToPayment + priceXQuantity;
-                // Eliminar el producto del carrito por id, una vez que se agrega al pago total
+            let priceXQuantity = priceProduct*quantityProduct;
+            // multiplico el precio del producto por la cantidad y lo agrego al pago total
+            addToPayment = addToPayment + priceXQuantity;
+            // Eliminar el producto del carrito por id, una vez que se agrega al pago total
+                const productInfo = {  
+                    productId: idProduct,
+                    title: productComplete.title,
+                    quantity: quantityProduct,
+                    price: priceProduct
+                }
+                productList.push(productInfo);        
                 let idP = idProduct.toString();
                 let updateCart = await cartModel.updateOne({
                     _id: idC,
@@ -70,27 +76,18 @@ const createTicket = async (idC) => {
                     },
                   }
                 );
-                // Actualizo el stock del producto comprado
-                const updateStockProduct = await productModel.updateOne(
-                    {_id: idP}, 
-                    {$set:{
-                        stock:newStock}
-                    }
-                );
-
-            }else{
-               //No se realiza la compra.
-            }
+        }  
+        const userId = user.id;
+        const ticketRegister = {
+            codeT, 
+            purchase_datetime,
+            productList,
+            addToPayment,
+            userId
         }
-        
+        const newPurchaseInfo = new TicketDTO(ticketRegister)
         //crear ticket de compra
-        let result = await ticketModel.create({
-                code:codeT, 
-                purchase_datetime, 
-                amount:addToPayment,
-                purcharser:user.id
-        });
-        console.log(result);
+        let result = await ticketService.createTicket(newPurchaseInfo);
         return result
     } catch (error) {
         throw error;

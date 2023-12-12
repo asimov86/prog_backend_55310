@@ -1,8 +1,11 @@
 const {Router} = require('express');
-const authorizationMiddleware = require('../middleware/authorization.js');
-const ProductsDao = require('../DAOs/dbManagers/ProductsDao.js');
-
-const Products = new ProductsDao();
+//const authorizationMiddleware = require('../middleware/authorization.js');
+const {isAdmin, isPremium} = require('../middleware/authorization.js');
+//const ProductsDao = require('../DAOs/dbManagers/ProductsDao');
+const productsService = require('../services/service.products.js');
+const ProductsDTO = require('../DTO/product.dto.js');
+const { authToken, verifyJwt } = require('../utils/jwt.js');
+//const Products = new ProductsDao();
 const router = Router();
 
 // API
@@ -17,42 +20,75 @@ router.get('/', async (req, res) => {
         customQuery = customQuery.toLowerCase();
     }
     let sort = parseInt(req.query.sort) || '';
-    const products = await Products.findAll(customQuery,page,limitValue,sort);
+    const products = await productsService.findAll(customQuery,page,limitValue,sort);
+    req.logger.info(products)
     res.json({messages: products});
 }) 
 
-
-
-router.get('/:pid', authorizationMiddleware.isUser , async (req, res) => {
+router.get('/:pid', async (req, res) => {
     const user = req.params.user;
-    console.log(user);
     const pid = req.params.pid;
-    const prod = await Products.getById(pid);
+    const prod = await productsService.getById(pid);
+    req.logger.info(prod)
     res.json({messages: prod});
 });
 
-router.post('/', async (req, res) => {
-    const { title, description, category, price, thumbnail, code, stock } = req.body;
-    const newProductInfo = { title, description, category, price, thumbnail, code, stock }
-    const newProduct = await Products.insertOne(newProductInfo);
-    res.json({message: newProduct});
+router.post('/', authToken, isAdmin, async (req, res) => {
+    try {
+        const { title, description, category, price, thumbnail, code, stock } = req.body;
+        //req.logger.info(req)
+        const lowerCategoryProduct = category.toLowerCase();
+        const productRegister = { title, description, lowerCategoryProduct, price, thumbnail, code, stock }
+        const newProductInfo = new ProductsDTO(productRegister);
+        const newProduct = await productsService.insertOne(newProductInfo);
+        req.logger.info(`The product has been created with ID: ${newProduct}`);
+        res.json({message: newProduct});
+    } catch (error) {
+        if (error.code === 13003) {
+            this.logger.error('Error: The product could not be inserted.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        this.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
+    
 });
 
-router.put('/:pid', async (req, res) => {
+    /* const user = req.session.user;
+    //console.log(user);
     const item = req.body;
+    //console.log(item);
+    let owner =  user.id;
+    //console.log(result);
+    console.log(owner.toString());
+    item['owner']=owner.toString();
+    //console.log(item);
+    const prod = await product.postProduct(item);
+    if(prod.statusCode === 400){
+        res.send({ status: (prod.statusCode), payload: prod });
+        req.logger.log('error', `Error!: ${prod}: ${statusCode}`);
+    }else{
+       res.send({status:"success",payload:prod})
+    }
+ */
+
+
+router.put('/:pid', authToken, isAdmin, async (req, res) => {
+    const productRegister = req.body;
     const itemId = req.params.pid;
-    const prod = await Products.update(item, itemId);
+    const newProductInfo = new ProductsDTO(productRegister);
+    const prod = await productsService.update(newProductInfo, itemId);
+    req.logger.info(prod)
     res.json({message:prod});
 })
 
-router.delete('/:pid', async (req, res) => {
+router.delete('/:pid', authToken, isAdmin, isPremium, async (req, res) => {
     const itemId = req.params.pid;
-    const prod = await Products.deleteById(itemId);
+    console.log(req.params.user)
+    const prod = await productsService.deleteById(itemId);
+    req.logger.info(prod)
     res.json({message:prod});
 });
-
-
-
 
 
 module.exports = router;
