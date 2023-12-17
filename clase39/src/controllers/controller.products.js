@@ -45,10 +45,10 @@ router.post('/', authToken, isAdmin, async (req, res) => {
         res.json({message: newProduct});
     } catch (error) {
         if (error.code === 13003) {
-            this.logger.error('Error: The product could not be inserted.');
+            req.logger.error('Error: The product could not be inserted.');
             return res.status(400).json({ status: 'error', code: error.code, message: error.message });
         }
-        this.logger.error('Otro tipo de error:', error.message);
+        req.logger.error('Otro tipo de error:', error.message);
         return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
     }
     
