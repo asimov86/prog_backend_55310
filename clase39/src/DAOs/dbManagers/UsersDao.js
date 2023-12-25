@@ -37,7 +37,8 @@ class UsersDao {
     async findById(uid) {
         try {
             const user = await Users.findOne({ _id: uid});
-            if (!user) {
+            if (!user || typeof user === 'undefined') {
+                console.log(user);
                 const error = new Error(`Error!: El usuario ${uid} no existe.`);
                 error.code = 14001; // Asignar un código al error
                 throw error;

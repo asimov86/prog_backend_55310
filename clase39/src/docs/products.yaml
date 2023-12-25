@@ -17,16 +17,14 @@ paths:
             schema:
               $ref: "#/components/schemas/products"
             example:
-              _id: 63e2b690a965030d2a43e3a7
-              title: Pepsi
+              title: PepsiCola Zero
               description: Refresco de cola, marca Pepsi
-              category: bebida
+              category: comida
               price: 790
-              status: true
               thumbnail: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj0aIM6YAvZ69RxhfS_GAwSeKMpM3kn1CgfK_c1DXI3m2zZ9IPo9y8-X-JNw0rKHKkA8g&usqp=CAU
-              code: 2A32F3268
+              code: 2A32F3269
               stock: 100
-              owner: 63f6533d456dd2b113a4178d
+              owner: 65459f9a4bec6c9c411b3e08
         description: Caracteristicas del producto a agregar
         required: true
       tags:
@@ -116,9 +114,6 @@ components:
         price: 
           type: Number
           description: Valor de compra del producto
-        status: 
-          type: Boolean
-          description: Indica si el producto está habilitado para su venta
         thumbnail: 
           type: String
           description: Ruta a la imágen de cada producto
@@ -139,7 +134,6 @@ components:
         description: Refresco de cola, marca Pepsi
         category: bebida
         price: 760
-        status: true
         thumbnail: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj0aIM6YAvZ69RxhfS_GAwSeKMpM3kn1CgfK_c1DXI3m2zZ9IPo9y8-X-JNw0rKHKkA8g&usqp=CAU
         code: 2A32F3268
         stock: 100
