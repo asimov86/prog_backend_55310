@@ -18,7 +18,7 @@ const cartSchema= new mongoose.Schema({
         default: Date.now, // Establece la fecha y hora actual por defecto
     },
   }
-)
+);
 
 const Carts = mongoose.model(cartCollection,cartSchema);
 module.exports = Carts;

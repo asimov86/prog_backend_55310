@@ -133,6 +133,23 @@ error: Error: The product could not be inserted.
 error: Error: The product could not be inserted.
 error: Error: The product could not be inserted.
 error: Error: The product could not be inserted.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Error: Error creating Cart.
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Error: Producto sin owner
+error: Error: Producto sin owner
+error: Error: Carrito sin usuario asociado.
 error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
@@ -147,6 +164,20 @@ error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
+error: Error: The supplied cart does not exist.
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: No se pudo eliminar el carrito.
+error: No se pudo eliminar productos del carrito.
+error: Otro tipo de error:
+error: No se pudo eliminar productos del carrito.
+error: No se pudo eliminar productos del carrito.
+error: No se pudo eliminar productos del carrito.
 error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
@@ -158,125 +189,47 @@ error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
-error: Otro tipo de error:
-error: Otro tipo de error:
+error: Error: The supplied cart does not exist.
+error: Error: The product could not be inserted.
+error: Error: The product could not be inserted.
+error: Error: The product could not be inserted.
+error: Error: The product could not be inserted.
+error: Error: The product could not be inserted.
+error: Error: The product could not be inserted.
 error: Error: The product could not be inserted.
 error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
+error: Error: The product could not be updated.
 error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: The product could not be inserted.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be inserted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
 error: Otro tipo de error:
 error: Error: The product could not be deleted.
 error: Error: The product could not be deleted.
 error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
 error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
 error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
 error: Otro tipo de error:
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
-error: Error: The product could not be deleted.
-error: Error: El usuario no puede adquirir el producto.
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Otro tipo de error:
+error: Error: El usuario no ha cargado todos los documentos requeridos.
+error: Otro tipo de error:
+error: Error: El usuario no ha cargado todos los documentos requeridos.
+error: Error: El usuario no ha cargado todos los documentos requeridos.
+error: Error: El usuario no ha cargado todos los documentos requeridos.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.
+error: Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.

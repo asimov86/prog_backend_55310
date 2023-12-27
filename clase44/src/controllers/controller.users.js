@@ -6,6 +6,7 @@ const usersService = require('../services/service.users.js');
 const rolesService = require('../services/service.roles.js');
 //const generateUsers = require('../utils/mock');
 //const Users = new UsersDao();
+const {upload} = require('../utils/multer.js');
 const router = Router();
 
 router.get('/mockuser', async (req, res) => {
@@ -101,8 +102,6 @@ router.get('/passwordChanged/:token', async (req, res) => {
                 msg: 'Error al obtener data'
             });
         }
-        // verificar el código
-        console.log(user);
         //Redireccionar a la vista que permite resetear la contraseña
         req.logger.info(data);
         return res.redirect('/api/views/resetPasswordDos');
@@ -117,11 +116,20 @@ router.get("/premium/:uid", async (req, res) => {
         //Actualizamos usuario
         const uid  = req.params.uid;
         const user = await usersService.getUserByID(uid);
-        /* if (!user){
-            //const error = new Error(`Error!: El usuario no existe.`);
-            //error.code = 14001; // Asignar un código al error
+        if (!user){
+            const error = new Error(`Error!: El usuario no existe.`);
+            error.code = 14001; // Asignar un código al error
             throw error;
-        } */
+        }
+        // Verifica si el usuario tiene cargados los documentos requeridos
+        const requiredDocumentsCount = 3;
+        let documents = user.documents || [];
+        documents = documents.flat(); // Aplana el array de arrays
+        const documentsInUploadsDocuments = documents.filter(doc => doc.reference && doc.reference.includes('uploads\\documents'));
+        if (documentsInUploadsDocuments.length < requiredDocumentsCount) {
+            req.logger.error('Error: El usuario no ha cargado todos los documentos requeridos para ser usuario premium.');
+            return res.status(400).json({ status: 'error',  message: 'El usuario no ha cargado todos los documentos requeridos para ser usuario premium.' });
+        }
         // Vemos cual role tiene actualmente
         let currentRoleId = user.role;
         console.log(currentRoleId.toString());
@@ -152,6 +160,26 @@ router.get("/premium/:uid", async (req, res) => {
         }
         req.logger.error('Otro tipo de error:', error.message);
         return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
+});
+
+// Endpoint para subir documentos
+router.post('/:uid/documents', async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        const type = req.query.type;
+        // Utiliza el middleware de Multer para subir los documentos
+        upload(type)(req, res, async (err) => {
+            if (err) {
+                return res.status(400).json({ error: err });
+            }
+            // Obtiene los archivos subidos y actualiza el usuario
+            const documents = req.files.map(file => ({ name: file.originalname, reference: file.path }));
+            const updatedUser = await usersService.updateUserDocuments(uid, documents);
+            return res.status(200).json({ message: 'Documentos subidos con éxito', user: updatedUser });
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
 });
 

@@ -32,7 +32,6 @@ const initilizePassport = () => {
     'register', //nombre de la estrategia
     new LocalStrategy( // instancia de la clase
       { passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
-        console.log(username)
         const { name, lastname, email, age } = req.body;
         try {
           if(!name || !lastname || !email || !password || !age) {
@@ -70,6 +69,7 @@ const initilizePassport = () => {
             password: getHashedPassword(password),
             cart: newCart.toString(),
             role:roleName._id.toString(),
+            last_connection: null
           }
           const userInfo = new UserDto(userRegister);
           const newUser = await Users.createUser(userInfo)

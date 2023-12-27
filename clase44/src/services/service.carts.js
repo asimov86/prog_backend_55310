@@ -10,15 +10,27 @@ const Users = new UsersDao();
 
 const getCartById = async (idC) => {
     try {
-        return Carts.getCartById(idC);
+        const cart = await Carts.getCartById(idC);
+        if(!cart || cart.length === 0){
+            const error = new Error('Cart not found or empty.');
+            error.code = 12002; // Asignar un código al error
+            throw error;
+        }
+        return cart;
     } catch (error) {
         throw error;
     }
 }
 
-const createCart = async (product) => {
+const createCart = async () => {
     try {
-        return Carts.createCart(product);
+        const newCart = await Carts.createCart();
+        if(!newCart){
+            const error = new Error('Could not create cart.');
+            error.code = 12000; // Asignar un código al error
+            throw error;
+        }
+        return newCart;
     } catch (error) {
         throw error;
     }
@@ -37,13 +49,18 @@ const addProductToCart = async (idC, idP) => {
             const product = await productsService.getById(idP);
             if (product.stock === 0) { 
                 const error = new Error('Producto sin existencia');
-                error.code = 10001; // Asignar un código al error
+                error.code = 10000; // Asignar un código al error
                 throw error;
             }
             //busco el owner del producto, si es el mismo id del usuario que está logueado no podrá comprar el producto
             let ownerProduct = product.owner;
             let idOwnerProduct = ownerProduct.toString();
             let user = await Users.findByCartId(idC);
+            if (!user) {
+                const error = new Error('Carrito sin usuario asociado.');
+                error.code = 10001; // Asignar un código al error
+                throw error;
+            }
             let idUser= user._id;
             let idOwner = idUser.toString();
             if(idOwnerProduct === idOwner){
@@ -147,6 +164,11 @@ const deleteProduct = async (idC, idP) => {
         const idProduct = product.id;
         // si es menor o igual al stock se puede comprar"
         let cart = await Carts.getCartById(idC);
+        if (!cart) {
+            const error = new Error('El carrito suministrado no existe.');
+            error.code = 12002; // Asignar un código al error
+            throw error;
+        }
         let productsCart = cart[0].products;
         for(let i=0; i<productsCart.length; i++){
             const productCart = productsCart[i].product;

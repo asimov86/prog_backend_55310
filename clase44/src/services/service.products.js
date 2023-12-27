@@ -31,17 +31,21 @@ const insertOne = async (newProductInfo) => {
 
 const update = async (newProductInfo, itemId) => {
     try {
+        console.log(newProductInfo);
+        console.log(itemId );
         return Products.update(newProductInfo, itemId);
     } catch (error) {
         throw error;
     }
 }
 
-const deleteById = async (itemId, userValue) => {
+//const deleteById = async (itemId, userValue) => {
+const deleteById = async (itemId) => {
     try {
-        const user = await User.getUserByID(userValue);
+        //const user = await User.getUserByID(userValue);
+        // Para la prueba de la Documentación de la API elimino la parte de permisos
         const prod = await Products.getById(itemId);
-        console.log(prod);
+       /*  console.log(prod);
         let prodOwner = prod.owner;
         console.log(prodOwner)
         const roleUserId = user.role.toString();
@@ -62,7 +66,7 @@ const deleteById = async (itemId, userValue) => {
                 error.code = 15002; // Asignar un código al error
                 throw error;        
             }
-        }
+        } */
         return Products.deleteById(itemId);
     } catch (error) {
         throw error;

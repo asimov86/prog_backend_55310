@@ -12,26 +12,71 @@
         <div >
             <div>
                 {{!-- Mensaje de bienvenida a usuario de sesión --}}
-                <h2>Bienvenido {{name}} {{lastname}}</h2>
+                {{!-- <h2>Bienvenido {{name}} {{lastname}}</h2>
                 <br>
                 <h3>Mail: {{email}}</h3>
                 <h3>Role: {{role}}</h3>
                 <h3>userId: {{id}}</h3>
-                <h3>Cart: {{cart}}</h3>
+                <h3>Cart: {{cart}}</h3> --}}
+                <div class="user-info">
+                    <div>
+                        <h2><span>Bienvenido {{name}} {{lastname}}</span></h2>
+                    </div>
+                    <div>
+                        <h3>Mail: <span id="email">{{email}}</span></h3>
+                    </div>
+                    <div>
+                        <h3>Role: <span id="role">{{role}}</span></h3>
+                    </div>
+                    <div>
+                        <h3>userId: <span id="userId">{{id}}</span></h3>
+                    </div>
+                    <div>
+                        <h3>Cart: <span id="cart">{{cart}}</span></h3>
+                    </div>
+                </div>
                 <div><img width="100" src={{picture}} alt="not found"></div>
             </div>
             <br>
             <br>
             {{!-- Boton de logout --}}
             <div id="logoutButton" class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                <button class="btn-group me-2" role="group" aria-label="First group" onclick="functionLogout()">Logout</button>
+                <button class="btn-group me-2" role="group" aria-label="First group" >Logout</button>
             </div>
         </div>
         <!-- De acá tomo el id del carrito-->
         <div>
             <button id="carrito" name="cart" value="{{cart}}" onclick="purchase()">Comprar</button>
         </div>
+        <div class="form_documents">
+    <div>
+        <h3>Subir archivos para:</h3>
+    </div>
 
+    <div>
+        <h4>Perfil</h4>
+        <form action="/api/users/{{id}}/documents?type=profile" method="POST" enctype="multipart/form-data">
+            <input type="file" name="documents" multiple>
+            <button type="submit">Subir archivo(s)</button>
+        </form>
+    </div>
+
+    <div>
+        <h4>Productos</h4>
+        <form action="/api/users/{{id}}/documents?type=product" method="POST" enctype="multipart/form-data">
+            <input type="file" name="documents" multiple>
+            <button type="submit">Subir archivo(s)</button>
+        </form>
+    </div>
+
+    <div>
+        <h4>Documentos</h4>
+        <form action="/api/users/{{id}}/documents?type=document" method="POST" enctype="multipart/form-data">
+            <input type="file" name="documents" multiple>
+            <button type="submit">Subir archivo(s)</button>
+        </form>
+    </div>
+</div>
         <div id="productos">
         {{#if listProducts.length}}
         <h2>Menú</h2>

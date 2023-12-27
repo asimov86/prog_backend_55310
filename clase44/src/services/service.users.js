@@ -73,6 +73,22 @@ const updateUser = async (id, user) => {
     }
 }
 
+const findByIdAndUpdateDate = async (userId, last_connection) => {
+    try {
+        return Users.findByIdAndUpdate(userId, last_connection);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const updateUserDocuments = async (uid, documents) => {
+    try {
+        return Users.updateUserDocuments(uid, documents);
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getUsers,
     getUserByID,
@@ -81,6 +97,8 @@ module.exports = {
     getUserByEmail,
     getUserByCart,
     getUserByCartId,
-    updateUser
+    updateUser,
+    findByIdAndUpdateDate,
+    updateUserDocuments
 };
 

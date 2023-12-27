@@ -28,6 +28,16 @@ const userSchema = new mongoose.Schema({
     confirmed: {
         type: Boolean,
         default: false
+    },
+    documents: {
+        type: [mongoose.Schema.Types.Mixed],
+        default: [],
+        required: false
+    },
+    last_connection: {
+        type: Date,
+        require: true,
+        default: null
     }
 });
 

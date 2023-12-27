@@ -7,7 +7,6 @@ class ProductDto {
         this.thumbnail = productRegister.thumbnail;
         this.code = productRegister.code;
         this.stock = productRegister.stock;
-        this.owner = productRegister.owner;
     }
 }
 

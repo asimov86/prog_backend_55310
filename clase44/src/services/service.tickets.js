@@ -30,18 +30,18 @@ const createTicket = async (idC) => {
         //Usuario que realiza la compra
         let user = await User.getUserByCart(idC);
         if(!user){
-            //req.logger.info( `Error!: El usuario no existe, user: ${user}`);
-            //return done(null, false, {message: 'User not found'})
-            return res.status(404).send({ status: 404, message: "El usuario no existe!" });
+            const error = new Error('El usuario no existe.');
+            error.code = 14002; // Asignar un código al error
+            throw error;
         }
         //Monto total a pagar del carrito
         //
         //Busco los valores del carrito
         let cart = await cartModel.findOne({_id:idC}).lean().populate('products.product');
         if(!cart){ 
-            //req.logger.info(`Error!: El carrito no existe, carrito: ${cart}`);
-            //return done(null, false, {message: 'Cart not found'})
-            return res.send({ status: 400, message: "El carrito no existe!" });
+            const error = new Error('El carrito no existe.');
+            error.code = 12002; // Asignar un código al error
+            throw error;
         }
         let addToPayment = 0;
         let productList = [];

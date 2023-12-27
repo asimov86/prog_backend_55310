@@ -9,16 +9,36 @@ const { isUser } = require('../middleware/authorization');
 const router = Router();
 
 router.get('/:cid', async (req, res) => {
-    let idC = req.params.cid;
-    const cart = await cartsService.getCartById(idC);
-    res.json({message: cart});
+    try {
+        let idC = req.params.cid;
+        const cart = await cartsService.getCartById(idC);
+        req.logger.info(JSON.stringify(cart));
+        res.json({message: cart});
+    } catch (error) {
+        console.log(error);
+        if (error.code === 12002) {
+            req.logger.error('Error: The supplied cart does not exist.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        req.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
 })
 
 router.post('/', async (req, res) => {
-    const product = []; 
-    const newCart = await cartsService.createCart(product);
-    req.logger.info(`Cart created.`, newCart);
-    res.json({message: 'Cart creado.'});
+    try {
+        const newCart = await cartsService.createCart();
+        req.logger.info(`Cart with ID: ${newCart} created.`, newCart);
+        res.json({message: `Cart with ID: ${newCart} created.`});
+    } catch (error) {
+        console.log(error);
+        if (error.code === 12000) {
+            req.logger.error('Error: Error creating Cart.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        req.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
 });
 
 router.post('/:cid/products/:pid', async (req, res) => {
@@ -27,11 +47,15 @@ router.post('/:cid/products/:pid', async (req, res) => {
         let idP = req.params.pid;
         const car = await cartsService.addProductToCart(idC, idP);
         req.logger.info(`Product ${idP} added to cart.`, car);
-       // return res.status(200).json({status:'success', message : `Product ${idP} added to cart ${car}`, car: car});
-       return res.status(200).json({status:'success', message : car});
+        return res.json({ message : car});
     } catch (error) {
-        if (error.code === 10001) {
+        console.log(error);
+        if (error.code === 10000) {
             req.logger.error('Error: Producto sin existencia');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        if (error.code === 10001) {
+            req.logger.error('Error: Carrito sin usuario asociado.');
             return res.status(400).json({ status: 'error', code: error.code, message: error.message });
         }
         if (error.code === 10002) {
@@ -51,43 +75,96 @@ router.post('/:cid/products/:pid', async (req, res) => {
             return res.status(400).json({ status: 'error', code: error.code, message: error.message });
         }
         req.logger.error('Otro tipo de error:', error.message);
-        return res.status(500).json({ status: 'error', error: `Error interno del servidor`});
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
     }
 });
 
-router.put('/:cid', verifyJwt, isUser, async(req, res) =>{
-    let idC = req.params.cid;
-    const items = req.body;
-    const car = await cartsService.putProduct(idC, items);
-    req.logger.info(`Product ${idC} added to cart.`, car);
-    res.json({ message : car});
+router.put('/:cid', async(req, res) =>{
+    try {
+        let idC = req.params.cid;
+        const items = req.body;
+        const car = await cartsService.putProduct(idC, items);
+        req.logger.info(`Products added to cart ${idC}.`, car);
+        res.json({ message : car});
+    } catch (error) {
+        console.log(error);
+        if (error.code === 13000) {
+            req.logger.error('No se pudo actualizar los productos del carrito.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        req.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
 });
 
 
-router.put('/:cid/products/:pid', verifyJwt, isUser, async(req, res) =>{
-    let idC = req.params.cid;
-    let idP = req.params.pid;
-    const item = req.body;
-    const car = await cartsService.putProducts(idC, idP, item);
-    req.logger.info(`Product ${idC} added to cart.`, car);
-    res.json({ message : car});
+router.put('/:cid/products/:pid', async(req, res) =>{
+    try {
+        let idC = req.params.cid;
+        let idP = req.params.pid;
+        console.log(idC);
+        console.log(idP);
+        const item = req.body;
+        console.log(item);
+        const car = await cartsService.putProducts(idC, idP, item);
+        req.logger.info(`Product ${idP} added to cart ${idC}.`, car);
+        res.json({ message : car});
+    } catch (error) {
+        console.log(error);
+        if (error.code === 13000) {
+            req.logger.error('No se pudo actualizar los productos del carrito.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        req.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
+    
 });
 
-router.delete('/:cid', verifyJwt, isUser, async(req, res) =>{
-    let idC = req.params.cid;
-    const car = await cartsService.deleteProducts(idC);
-    res.json({ message : car});
+router.delete('/:cid', async(req, res) =>{
+    try {
+        let idC = req.params.cid;
+        const car = await cartsService.deleteProducts(idC);
+        req.logger.info(`Removed products.`);
+        res.json({ message : `Removed products.`});
+    } catch (error) {
+        console.log(error);
+        if (error.code === 12002) {
+            req.logger.error('No se pudo eliminar productos del carrito.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        if (error.code === 13000) {
+            req.logger.error('No se pudo eliminar productos del carrito.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        req.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
 });
 
-router.delete('/:cid/products/:pid', verifyJwt, isUser, async(req, res) =>{
-    let idC = req.params.cid;
-    let idP = req.params.pid;
-    const car = await cartsService.deleteProduct(idC, idP);
-    req.logger.info(`Product ${idC} removed from cart.`, car);
-    res.json({ message : car});
+router.delete('/:cid/products/:pid', async(req, res) =>{
+    try {
+        let idC = req.params.cid;
+        let idP = req.params.pid;
+        const car = await cartsService.deleteProduct(idC, idP);
+        req.logger.info(`Product ${idC} removed from cart.`, car);
+        res.json({ message : car});
+    } catch (error) {
+        console.log(error);
+        if (error.code === 12001) {
+            req.logger.error('No se pudo eliminar el producto.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        if (error.code === 12002) {
+            req.logger.error('No se pudo eliminar el producto.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        req.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
+    }
 });
 
-router.post('/:cid/purchase', verifyJwt, isUser, async (req, res) => {
+router.post('/:cid/purchase', async (req, res) => {
     try {
         let idC = req.params.cid;
         const ticket = await ticketsService.createTicket(idC);

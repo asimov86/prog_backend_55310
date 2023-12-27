@@ -35,14 +35,16 @@ router.get('/:pid', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { title, description, category, price, thumbnail, code, stock, owner } = req.body;
+        const { title, description, category, price, thumbnail, code, stock } = req.body;
+        //req.logger.info(req)
         const lowerCategoryProduct = category.toLowerCase();
-        const productRegister = { title, description, lowerCategoryProduct, price, thumbnail, code, stock, owner }
+        const productRegister = { title, description, lowerCategoryProduct, price, thumbnail, code, stock }
         const newProductInfo = new ProductsDTO(productRegister);
         const newProduct = await productsService.insertOne(newProductInfo);
         req.logger.info(`The product has been created with ID: ${newProduct}`);
-        res.status(200).json({status: 'success', message: `The product has been created with ID: ${newProduct}`, productId: newProduct});
+        res.json({message: newProduct});
     } catch (error) {
+        console.log(error);
         if (error.code === 13003) {
             req.logger.error('Error: The product could not be inserted.');
             return res.status(400).json({ status: 'error', code: error.code, message: error.message });
@@ -53,67 +55,45 @@ router.post('/', async (req, res) => {
     
 });
 
-    /* const user = req.session.user;
-    //console.log(user);
-    const item = req.body;
-    //console.log(item);
-    let owner =  user.id;
-    //console.log(result);
-    console.log(owner.toString());
-    item['owner']=owner.toString();
-    //console.log(item);
-    const prod = await product.postProduct(item);
-    if(prod.statusCode === 400){
-        res.send({ status: (prod.statusCode), payload: prod });
-        req.logger.log('error', `Error!: ${prod}: ${statusCode}`);
-    }else{
-       res.send({status:"success",payload:prod})
+router.put('/:pid', async (req, res) => {
+    try {
+        const { title, description, category, price, thumbnail, code, stock } = req.body;
+        const lowerCategoryProduct = category.toLowerCase();
+        const productRegister = { title, description, lowerCategoryProduct, price, thumbnail, code, stock }  
+        const itemId = req.params.pid;
+        const newProductInfo = new ProductsDTO(productRegister);
+        const prod = await productsService.update(newProductInfo, itemId);
+        req.logger.info(`El producto ${itemId} se actualizó satisfactoriamente.`)
+        res.json({message:`El producto se actualizó satisfactoriamente.`});
+    } catch (error) {
+        console.log(error);
+        if (error.code === 13004) {
+            req.logger.error('Error: The product could not be updated.');
+            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
+        }
+        req.logger.error('Otro tipo de error:', error.message);
+        return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
     }
- */
 
-
-router.put('/:pid', authToken, isAdmin, async (req, res) => {
-    const productRegister = req.body;
-    const itemId = req.params.pid;
-    const newProductInfo = new ProductsDTO(productRegister);
-    const prod = await productsService.update(newProductInfo, itemId);
-    req.logger.info(prod)
-    res.json({message:prod});
 })
-
-/* router.delete('/:pid', async (req, res) => { //// Lo comento para las pruebas Desafio clase41. 
-    const itemId = req.params.pid;
-    console.log(req.params.user)
-    const prod = await productsService.deleteById(itemId);
-    req.logger.info(prod)
-    //res.json({message:prod});
-    res.status(200).json({status: 'success', message:prod});
-}); */
 
 router.delete('/:pid', async (req, res) => {
     try {
         const itemId = req.params.pid;
-        const userValue = req.body.ownerId;
-        console.log(req.params.itemId)
-        console.log(userValue)
-        const prod = await productsService.deleteById(itemId, userValue);
-        req.logger.info(prod)
-        //res.json({message:prod});
-        res.status(200).json({status: 'success', message:prod});
+        //console.log(req.params.user)
+        const prod = await productsService.deleteById(itemId);
+        req.logger.info(`El producto ${itemId} se elimino satisfactoriamente.`)
+        res.json({message:`El producto se elimino satisfactoriamente.`});
     } catch (error) {
-        if (error.code === 15001) {
-            req.logger.error('Error: The product could not be deleted.');
-            return res.status(400).json({ status: 'error', code: error.code, message: error.message });
-        }
-        if (error.code === 15002) {
+        console.log(error);
+        if (error.code === 14001) {
             req.logger.error('Error: The product could not be deleted.');
             return res.status(400).json({ status: 'error', code: error.code, message: error.message });
         }
         req.logger.error('Otro tipo de error:', error.message);
         return res.status(500).json({ status: 'error', error: 'Error interno del servidor' });
     }
-    
-    
+
 });
 
 
